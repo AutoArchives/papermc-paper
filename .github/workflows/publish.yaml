@@ -1,0 +1,19 @@
+name: Publish 26.3
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: "papermc/ci/.github/workflows/build-paper.yaml@main"
+    with:
+      build_number: ${{ github.run_number }}
+    secrets:
+      ARTIFACTORY_USERNAME: "${{ secrets.ARTIFACTORY_USERNAME }}"
+      ARTIFACTORY_PASSWORD: "${{ secrets.ARTIFACTORY_PASSWORD }}"
+      FILL_API_URL: "${{ secrets.FILL_API_URL }}"
+      FILL_API_KEY: "${{ secrets.FILL_API_KEY }}"
