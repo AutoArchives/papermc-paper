@@ -5,9 +5,11 @@ import io.papermc.paper.datacomponent.item.PaperAttackRange;
 import io.papermc.paper.datacomponent.item.PaperBannerPatternLayers;
 import io.papermc.paper.datacomponent.item.PaperBlockItemDataProperties;
 import io.papermc.paper.datacomponent.item.PaperBlocksAttacks;
+import io.papermc.paper.datacomponent.item.PaperBrewingFuel;
 import io.papermc.paper.datacomponent.item.PaperBundleContents;
 import io.papermc.paper.datacomponent.item.PaperChargedProjectiles;
 import io.papermc.paper.datacomponent.item.PaperConsumable;
+import io.papermc.paper.datacomponent.item.PaperCookingFuel;
 import io.papermc.paper.datacomponent.item.PaperCustomModelData;
 import io.papermc.paper.datacomponent.item.PaperDamageResistant;
 import io.papermc.paper.datacomponent.item.PaperDeathProtection;
@@ -225,6 +227,8 @@ public final class DataComponentAdapters {
         register(DataComponents.VILLAGER_FOOD, PaperVillagerFood::new);
         register(DataComponents.SIGN_TEXT_FRONT, PaperSignText::new);
         register(DataComponents.SIGN_TEXT_BACK, PaperSignText::new);
+        register(DataComponents.COOKING_FUEL, PaperCookingFuel::new);
+        register(DataComponents.BREWING_FUEL, PaperBrewingFuel::new);
 
         for (final ResourceKey<DataComponentType<?>> key : BuiltInRegistries.DATA_COMPONENT_TYPE.registryKeySet()) {
             if (!ADAPTERS.containsKey(key)) {

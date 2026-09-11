@@ -139,4 +139,8 @@ interface ItemComponentTypesBridge {
     SignText.Builder signText();
 
     SignText.Builder signText(List<? extends ComponentLike> messages);
+
+    BrewingFuel.Builder brewingFuel();
+
+    CookingFuel.Builder cookingFuel();
 }
