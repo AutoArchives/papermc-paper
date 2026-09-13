@@ -242,7 +242,7 @@
      }
  
      private void playBrokenSound() {
-@@ -459,7 +_,33 @@
+@@ -459,7 +_,32 @@
          return this.isSmall();
      }
  
@@ -262,7 +262,6 @@
 +    }
 +    // Paper end - Allow ArmorStands not to tick
 +
-+    // TODO - snapshot - ArmorStand is no longer overiding kill(ServerLevel), which seems problematic given the different logic armor stand follows, needs investigation
 +    // Paper start - pass damage source for event
 +    public void kill(final ServerLevel level, final @Nullable DamageSource source) {
 +        this.kill(level, source, true);
