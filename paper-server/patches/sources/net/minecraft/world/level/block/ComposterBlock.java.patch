@@ -5,12 +5,12 @@
          if (fillLevel < 8 && compostable != null) {
              if (fillLevel < 7 && level instanceof ServerLevel serverLevel) {
 -                BlockState newState = addLayer(player, state, serverLevel, pos, compostable);
-+                // Paper start - compost events
++                // Paper start - call compost events
 +                BlockState newState = addLayer(player, state, serverLevel, pos, compostable, itemStack);
 +                if (newState == null) {
 +                    return InteractionResult.PASS;
 +                }
-+                // Paper end - compost events
++                // Paper end - call compost events
                  level.levelEvent(LevelEvent.COMPOSTER_FILL, pos, state != newState ? 1 : 0);
                  player.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
                  itemStack.consume(1, player);
@@ -19,10 +19,10 @@
          Compostable compostable = itemStack.get(DataComponents.COMPOSTABLE);
          if (fillLevel < 7 && compostable != null) {
 -            BlockState newState = addLayer(sourceEntity, state, level, pos, compostable);
-+            // Paper - call compost events
++            // Paper start - call compost events
 +            BlockState newState = addLayer(sourceEntity, state, level, pos, compostable, itemStack);
 +            if (newState == null) return state;
-+            // Paper - call compost events
++            // Paper end - call compost events
              itemStack.shrink(1);
              return newState;
          } else {
@@ -41,36 +41,44 @@
          if (!level.isClientSide()) {
              Vec3 itemPos = Vec3.atLowerCornerWithOffset(pos, 0.5, 1.01, 0.5).offsetRandomXZ(level.getRandom(), 0.7F);
              ItemEntity entity = new ItemEntity(level, itemPos.x(), itemPos.y(), itemPos.z(), new ItemStack(Items.BONE_MEAL));
-@@ -186,8 +_,9 @@
+@@ -186,8 +_,8 @@
          return newState;
      }
  
 -    private static BlockState addLayer(
+-        final @Nullable Entity sourceEntity, final BlockState state, final ServerLevel level, final BlockPos pos, final Compostable compostable
 +    private static @Nullable BlockState addLayer( // Paper - compost event - nullable return for canceled events
-         final @Nullable Entity sourceEntity, final BlockState state, final ServerLevel level, final BlockPos pos, final Compostable compostable
-+        , final ItemStack addedStack // Paper - compost event - pass source stack
++        final @Nullable Entity sourceEntity, final BlockState state, final ServerLevel level, final BlockPos pos, final Compostable compostable, final ItemStack addedStack // Paper - compost event - pass source stack
      ) {
          int fillLevel = state.getValue(LEVEL);
          LootContext lootContext = new LootContext.Builder(
-@@ -199,6 +_,18 @@
+@@ -199,9 +_,26 @@
              )
              .create(Optional.empty());
          int layersToAdd = compostable.layers().get(lootContext, 0);
-+        // Paper start - Add CompostItemEvent and EntityCompostItemEvent
++        // Paper start - call compost events
 +        final io.papermc.paper.event.block.CompostItemEvent event;
 +        if (sourceEntity == null) {
-+            event = new io.papermc.paper.event.block.CompostItemEvent(org.bukkit.craftbukkit.block.CraftBlock.at(level, pos), addedStack.getBukkitStack(), layersToAdd);
++            event = new io.papermc.paper.event.block.CompostItemEvent(org.bukkit.craftbukkit.block.CraftBlock.at(level, pos), org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(addedStack), layersToAdd);
 +        } else {
-+            event = new io.papermc.paper.event.entity.EntityCompostItemEvent(sourceEntity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos), addedStack.getBukkitStack(), layersToAdd);
++            event = new io.papermc.paper.event.entity.EntityCompostItemEvent(sourceEntity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos), org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(addedStack), layersToAdd);
 +        }
 +        if (!event.callEvent()) { // check for cancellation of entity event (non entity event can't be cancelled cause of hoppers)
 +            return null;
 +        }
 +        layersToAdd = event.getLevelsToRaise();
-+        // Paper end - Add CompostItemEvent and EntityCompostItemEvent
++        // Paper end - call compost events
          if (layersToAdd > 0) {
              int newLevel = Mth.clamp(fillLevel + layersToAdd, 0, 7);
              BlockState newState = state.setValue(LEVEL, newLevel);
++            // Paper start - call EntityChangeBlockEvent
++            if (sourceEntity != null && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(sourceEntity, pos, newState)) {
++                return null;
++            }
++            // Paper end - call EntityChangeBlockEvent
+             level.setBlockAndUpdate(pos, newState);
+             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(sourceEntity, newState));
+             if (newLevel == 7) {
 @@ -248,13 +_,14 @@
          if (contentLevel == 8) {
              return new ComposterBlock.OutputContainer(state, level, pos, new ItemStack(Items.BONE_MEAL));
@@ -101,12 +109,12 @@
              if (!contents.isEmpty() && compostable != null && this.level instanceof ServerLevel serverLevel) {
                  this.changed = true;
 -                BlockState newState = ComposterBlock.addLayer(null, this.state, serverLevel, this.pos, compostable);
-+                // Paper start - Add CompostItemEvent and EntityCompostItemEvent
++                // Paper start - call compost events
 +                BlockState newState = ComposterBlock.addLayer(null, this.state, serverLevel, this.pos, compostable, contents);
 +                if (newState == null) {
 +                    return;
 +                }
-+                // Paper end - Add CompostItemEvent and EntityCompostItemEvent
++                // Paper end - call compost events
                  this.level.levelEvent(LevelEvent.COMPOSTER_FILL, this.pos, newState != this.state ? 1 : 0);
                  this.removeItemNoUpdate(0);
              }

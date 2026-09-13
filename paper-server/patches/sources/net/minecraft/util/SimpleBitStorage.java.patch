@@ -51,23 +51,23 @@
          int cellIndex = this.cellIndex(index);
          long cellValue = this.data[cellIndex];
          int bitIndex = (index - cellIndex * this.valuesPerLong) * this.bits;
-@@ -293,7 +_,7 @@
+@@ -293,8 +_,7 @@
      }
  
      @Override
 -    public void fill(final int value) {
+-        Validate.inclusiveBetween(0L, this.mask, value);
 +    public final void fill(final int value) { // Paper - Perf: Optimize SimpleBitStorage
-         Validate.inclusiveBetween(0L, this.mask, value);
          long cellValue = value & this.mask;
          int offset = this.bits;
-@@ -307,8 +_,8 @@
+ 
+@@ -307,8 +_,7 @@
      }
  
      @Override
 -    public int get(final int index) {
 -        Validate.inclusiveBetween(0L, this.size - 1, index);
 +    public final int get(final int index) { // Paper - Perf: Optimize SimpleBitStorage
-+        //Validate.inclusiveBetween(0L, this.size - 1, index); // Paper - Perf: Optimize SimpleBitStorage
          int cellIndex = this.cellIndex(index);
          long cellValue = this.data[cellIndex];
          int bitIndex = (index - cellIndex * this.valuesPerLong) * this.bits;

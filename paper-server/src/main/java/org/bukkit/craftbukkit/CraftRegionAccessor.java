@@ -118,7 +118,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
     @Override
     public void setBlockData(int x, int y, int z, BlockData blockData) {
         BlockPos pos = new BlockPos(x, y, z);
-        this.getHandle().setBlock(pos, ((CraftBlockData) blockData).getState(), Block.UPDATE_ALL);
+        this.getHandle().setBlockAndUpdate(pos, ((CraftBlockData) blockData).getState());
     }
 
     @Override

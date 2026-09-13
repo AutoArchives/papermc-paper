@@ -73,7 +73,7 @@
 +                            // CraftBukkit start
 +                            org.bukkit.event.inventory.FurnaceBurnEvent burnEvent = new org.bukkit.event.inventory.FurnaceBurnEvent(
 +                                org.bukkit.craftbukkit.block.CraftBlock.at(level, pos),
-+                                org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(fuel),
++                                org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(fuel),
 +                                newLitTime
 +                            );
 +                            if (!burnEvent.callEvent()) return;
@@ -101,7 +101,7 @@
 +                            if (entity.cookingTimer == 0) {
 +                                org.bukkit.event.inventory.FurnaceStartSmeltEvent smeltEvent = new org.bukkit.event.inventory.FurnaceStartSmeltEvent(
 +                                    org.bukkit.craftbukkit.block.CraftBlock.at(level, pos),
-+                                    org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(ingredient),
++                                    org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(ingredient),
 +                                    (org.bukkit.inventory.CookingRecipe<?>) recipe.toBukkitRecipe(),
 +                                    getTotalCookTime(level, entity)
 +                                );
@@ -115,7 +115,7 @@
                                  entity.cookingTimer = 0;
                                  entity.cookingTotalTime = getTotalCookTime(recipe, entity);
 -                                burn(entity.items, ingredient, burnResult);
-+                                if(burn(entity.items, ingredient, burnResult, recipe, level, entity.worldPosition)) { // CraftBukkit - add level & pos // Paper - make burn return a boolean again, add recipe
++                                if (burn(entity.items, ingredient, burnResult, recipe, level, entity.worldPosition)) { // CraftBukkit - add level & pos // Paper - make burn return a boolean again, add recipe
                                  entity.setRecipeUsed(recipe);
 +                                } // Paper
                                  changed = true;
@@ -129,7 +129,7 @@
 +    private static boolean burn(final NonNullList<ItemStack> items, final ItemStack inputItemStack, ItemStack result, RecipeHolder<? extends AbstractCookingRecipe> recipe, final net.minecraft.world.level.Level level, final BlockPos blockPos) { // CraftBukkit
          ItemStack resultItemStack = items.get(2);
 +        // CraftBukkit start - fire FurnaceSmeltEvent
-+        org.bukkit.craftbukkit.inventory.CraftItemStack apiIngredient = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(inputItemStack);
++        org.bukkit.inventory.ItemStack apiIngredient = org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(inputItemStack);
 +        org.bukkit.inventory.ItemStack apiResult = org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(result);
 +
 +        org.bukkit.event.inventory.FurnaceSmeltEvent furnaceSmeltEvent = new org.bukkit.event.inventory.FurnaceSmeltEvent(
@@ -146,7 +146,7 @@
 +        if (!result.isEmpty()) {
 +            if (resultItemStack.isEmpty()) {
 +                items.set(SLOT_RESULT, result.copy());
-+            } else if (org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(resultItemStack).isSimilar(apiResult)) {
++            } else if (org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(resultItemStack).isSimilar(apiResult)) {
 +                resultItemStack.grow(result.getCount());
 +            } else {
 +                return false;
@@ -190,7 +190,7 @@
          player.awardRecipes(recipesToAward);
  
          for (RecipeHolder<?> recipe : recipesToAward) {
-@@ -380,30 +_,60 @@
+@@ -380,33 +_,60 @@
      }
  
      public List<RecipeHolder<?>> getRecipesToAwardAndPopExperience(final ServerLevel level, final Vec3 position) {
@@ -228,7 +228,7 @@
 +            event = new org.bukkit.event.inventory.FurnaceExtractEvent(
 +                player.getBukkitEntity(),
 +                org.bukkit.craftbukkit.block.CraftBlock.at(level, blockPos),
-+                itemStack.asBukkitCopy(),
++                org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(itemStack),
 +                removeCount,
 +                xpReward
 +            );
@@ -247,10 +247,13 @@
  
      @Override
      public void fillStackedContents(final StackedItemContents contents) {
+-        for (ItemStack itemStack : this.items) {
+-            contents.accountStack(itemStack);
+-        }
 +        // Paper start - don't account fuel stack (fixes MC-243057)
 +        contents.accountStack(this.items.get(SLOT_INPUT));
 +        contents.accountStack(this.items.get(SLOT_RESULT));
 +        // Paper end - don't account fuel stack (fixes MC-243057)
-         for (ItemStack itemStack : this.items) {
-             contents.accountStack(itemStack);
-         }
+     }
+ 
+     @Override

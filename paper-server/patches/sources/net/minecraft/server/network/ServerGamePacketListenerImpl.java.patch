@@ -320,7 +320,7 @@
 +                double delta = Mth.square(this.lastPosX - to.getX()) + Mth.square(this.lastPosY - to.getY()) + Mth.square(this.lastPosZ - to.getZ());
 +                float deltaAngle = Math.abs(this.lastYRot - to.getYaw()) + Math.abs(this.lastXRot - to.getPitch());
 +
-+                if ((delta > 1f / 256 || deltaAngle > 10f) && !this.player.isImmobile()) {
++                if ((delta > 1.0F / 256 || deltaAngle > 10.0F) && !this.player.isImmobile()) {
 +                    this.lastPosX = to.getX();
 +                    this.lastPosY = to.getY();
 +                    this.lastPosZ = to.getZ();
@@ -502,7 +502,7 @@
              Inventory inventory = this.player.getInventory();
              int slotWithExistingItem = inventory.findSlotMatchingItem(itemStack);
 +            // Paper start - Add PlayerPickItemEvent
-+            final org.bukkit.inventory.ItemStack bukkitItem = itemStack.asBukkitCopy();
++            final org.bukkit.inventory.ItemStack bukkitItem = CraftItemStack.asBukkitCopy(itemStack);
 +            final int sourceSlot = slotWithExistingItem;
 +            final int targetSlot = Inventory.isHotbarSlot(sourceSlot) ? sourceSlot : inventory.getSuitableHotbarSlot();
 +            final org.bukkit.entity.Player bukkitPlayer = this.player.getBukkitEntity();
@@ -862,7 +862,7 @@
 +                    double delta = Mth.square(this.lastPosX - to.getX()) + Mth.square(this.lastPosY - to.getY()) + Mth.square(this.lastPosZ - to.getZ());
 +                    float deltaAngle = Math.abs(this.lastYRot - to.getYaw()) + Math.abs(this.lastXRot - to.getPitch());
 +
-+                    if ((delta > 1f / 256 || deltaAngle > 10.0F) && !this.player.isImmobile()) {
++                    if ((delta > 1.0F / 256 || deltaAngle > 10.0F) && !this.player.isImmobile()) {
 +                        this.lastPosX = to.getX();
 +                        this.lastPosY = to.getY();
 +                        this.lastPosZ = to.getZ();
@@ -1022,8 +1022,8 @@
 -                        this.player.setItemInHand(InteractionHand.OFF_HAND, this.player.getItemInHand(InteractionHand.MAIN_HAND));
 -                        this.player.setItemInHand(InteractionHand.MAIN_HAND, swap);
 +                        // CraftBukkit start - inspiration taken from DispenserRegistry (See SpigotCraft#394)
-+                        CraftItemStack mainHand = CraftItemStack.asCraftMirror(swap);
-+                        CraftItemStack offHand = CraftItemStack.asCraftMirror(this.player.getItemInHand(InteractionHand.MAIN_HAND));
++                        org.bukkit.inventory.ItemStack mainHand = CraftItemStack.asBukkitMirror(swap);
++                        org.bukkit.inventory.ItemStack offHand = CraftItemStack.asBukkitMirror(this.player.getItemInHand(InteractionHand.MAIN_HAND));
 +                        PlayerSwapHandItemsEvent swapItemsEvent = new PlayerSwapHandItemsEvent(this.getCraftPlayer(), mainHand.clone(), offHand.clone());
 +                        this.cserver.getPluginManager().callEvent(swapItemsEvent);
 +                        if (swapItemsEvent.isCancelled()) {
@@ -1652,7 +1652,7 @@
 +        } // Paper end - Call interact event
 +
 +        // Arm swing animation
-+        io.papermc.paper.event.player.PlayerArmSwingEvent event = new io.papermc.paper.event.player.PlayerArmSwingEvent(this.getCraftPlayer(), org.bukkit.craftbukkit.CraftEquipmentSlot.getHand(InteractionHand.MAIN_HAND)); // Paper - Add PlayerArmSwingEvent
++        io.papermc.paper.event.player.PlayerArmSwingEvent event = new io.papermc.paper.event.player.PlayerArmSwingEvent(this.getCraftPlayer(), org.bukkit.inventory.EquipmentSlot.HAND); // Paper - Add PlayerArmSwingEvent
 +        if (!event.callEvent()) return;
 +        // CraftBukkit end
          SwingAnimation swingAnimation = this.player.getItemInHand(InteractionHand.MAIN_HAND).getAttackAnimation();
@@ -2371,14 +2371,14 @@
      public void handleSignUpdate(final ServerboundSignUpdatePacket packet) {
 -        List<String> lines = packet.lines().stream().map(ChatFormatting::stripFormatting).collect(Collectors.toList());
 +        // Paper start - limit client sign length
-+        final java.util.function.UnaryOperator<String> lineLimiter = s -> {
-+            if (s.length() - MAX_SIGN_LINE_LENGTH <= 0) return s;
-+            final int offset = s.codePoints().limit(MAX_SIGN_LINE_LENGTH).map(Character::charCount).sum();
-+            if (offset < s.length()) return s.substring(0, offset);
-+            return s;
++        final java.util.function.UnaryOperator<String> lineLimiter = line -> {
++            if (line.length() - MAX_SIGN_LINE_LENGTH <= 0) return line;
++            final int offset = line.codePoints().limit(MAX_SIGN_LINE_LENGTH).map(Character::charCount).sum();
++            if (offset < line.length()) return line.substring(0, offset);
++            return line;
 +        };
++        List<String> lines = packet.lines().stream().map(lineLimiter).map(ChatFormatting::stripFormatting).collect(Collectors.toList());
 +        // Paper end - limit client sign length
-+        List<String> lines = packet.lines().stream().map(lineLimiter).map(ChatFormatting::stripFormatting).collect(Collectors.toList()); // Paper - limit client sign length
          this.filterTextPacket(lines).thenAcceptAsync(filteredLines -> this.updateSignText(packet, (List<FilteredText>)filteredLines), this.server);
      }
  
@@ -2392,7 +2392,7 @@
 +            if (!new io.papermc.paper.event.packet.UncheckedSignChangeEvent(
 +                this.player.getBukkitEntity(),
 +                io.papermc.paper.util.MCUtil.toPosition(pos),
-+                packet.slot() == net.minecraft.world.level.block.entity.SignTextSlot.FRONT ? org.bukkit.block.sign.Side.FRONT : org.bukkit.block.sign.Side.BACK,
++                org.bukkit.craftbukkit.block.sign.CraftSignSide.fromVanilla(packet.slot()),
 +                lines.stream().<net.kyori.adventure.text.Component>map(line -> net.kyori.adventure.text.Component.text(line.raw())).toList())
 +                .callEvent()) {
 +                return;

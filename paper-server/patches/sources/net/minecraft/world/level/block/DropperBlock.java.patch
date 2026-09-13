@@ -18,7 +18,7 @@
 -                        remaining = HopperBlockEntity.addItem(blockEntity, into, itemStack.copyWithCount(1), direction.getOpposite());
 -                        if (remaining.isEmpty()) {
 +                        // CraftBukkit start - Fire event when pushing items into other inventories
-+                        org.bukkit.craftbukkit.inventory.CraftItemStack oitemstack = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemStack.copyWithCount(1));
++                        org.bukkit.inventory.ItemStack oitemstack = org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(itemStack.copyWithCount(1));
 +
 +                        org.bukkit.inventory.Inventory destinationInventory;
 +                        // Have to special case large chests as they work oddly

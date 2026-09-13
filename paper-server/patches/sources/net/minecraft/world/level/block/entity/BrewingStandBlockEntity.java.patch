@@ -49,7 +49,7 @@
 +            // Paper start - call BrewingStandFuelEvent
 +            org.bukkit.event.inventory.BrewingStandFuelEvent event = new org.bukkit.event.inventory.BrewingStandFuelEvent(
 +                org.bukkit.craftbukkit.block.CraftBlock.at(level, pos),
-+                org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(fuel),
++                org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(fuel),
 +                entity.getUses(level, brewingFuel)
 +            );
 +            if (!event.callEvent()) {
@@ -82,7 +82,7 @@
 +            // Paper start - call BrewingStartEvent
 +            org.bukkit.event.block.BrewingStartEvent event = new org.bukkit.event.block.BrewingStartEvent(
 +                org.bukkit.craftbukkit.block.CraftBlock.at(level, pos),
-+                org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(ingredient),
++                org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(ingredient),
 +                (int)Math.ceil(400.0F / speedMutliplier)
 +            );
 +            event.callEvent();
@@ -106,7 +106,7 @@
              Optional<RecipeHolder<BrewingRecipe>> recipe = entity.quickCheck.getRecipeFor(input, level);
 -            items.set(dest, recipe.isPresent() ? recipe.get().value().assemble(input) : container);
 -        }
-+            brewResults.add(dest, org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(recipe.isPresent() ? recipe.get().value().assemble(input) : container)); // Paper - call BrewEvent - store results in map first.
++            brewResults.add(dest, org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(recipe.isPresent() ? recipe.get().value().assemble(input) : container)); // Paper - call BrewEvent - store results in map first.
 +        }
 +
 +        // Paper start - call BrewEvent

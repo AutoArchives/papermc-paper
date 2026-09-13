@@ -39,7 +39,7 @@
  
          public MobSpawnSettings.Builder noSpawns(final MobCategory category) {
 -            this.spawnsByCategory.put(category, WeightedList.builder());
-+            this.spawnsByCategory.put(category, new net.minecraft.world.level.biome.MobSpawnSettings.Builder.MobListBuilder<>()); // Paper - use double-tracked MobListBuilder
++            this.spawnsByCategory.put(category, new MobSpawnSettings.Builder.MobListBuilder<>()); // Paper - use double-tracked MobListBuilder
              return this;
          }
  
@@ -48,7 +48,7 @@
  
          private WeightedList.Builder<MobSpawnSettings.SpawnerData> forCategory(final MobCategory category) {
 -            return this.spawnsByCategory.computeIfAbsent(category, var0 -> WeightedList.builder());
-+            return this.spawnsByCategory.computeIfAbsent(category, var0 -> new net.minecraft.world.level.biome.MobSpawnSettings.Builder.MobListBuilder<>()); // Paper - use double-tracked MobListBuilder
++            return this.spawnsByCategory.computeIfAbsent(category, var0 -> new MobSpawnSettings.Builder.MobListBuilder<>()); // Paper - use double-tracked MobListBuilder
          }
      }
  

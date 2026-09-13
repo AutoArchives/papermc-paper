@@ -16,7 +16,7 @@
 +             * NOTE: I fear users will just get a plain map as their "treasure"
 +             * This is preferable to disrespecting the config.
 +             */
-+            return runningForVillagerTrade ? net.minecraft.world.item.ItemStack.EMPTY : itemStack;
++            return runningForVillagerTrade ? ItemStack.EMPTY : itemStack;
 +        }
 +        final boolean shouldSkipKnownStructures = runningForVillagerTrade
 +            ? !level.paperConfig().environment.treasureMaps.findAlreadyDiscoveredVillager

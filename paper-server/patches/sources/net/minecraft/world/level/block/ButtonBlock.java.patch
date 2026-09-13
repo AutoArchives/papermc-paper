@@ -36,8 +36,8 @@
          boolean wasPressed = state.getValue(POWERED);
 +        // CraftBukkit start - Call interact event when arrows turn on wooden buttons
 +        if (wasPressed != shouldBePressed && shouldBePressed) {
-+            final org.bukkit.block.Block block = org.bukkit.craftbukkit.block.CraftBlock.at(level, pos);
-+            final org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(firstArrow.getBukkitEntity(), block);
++            org.bukkit.block.Block block = org.bukkit.craftbukkit.block.CraftBlock.at(level, pos);
++            org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(firstArrow.getBukkitEntity(), block);
 +            if (!event.callEvent()) {
 +                return;
 +            }

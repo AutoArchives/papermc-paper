@@ -31,11 +31,10 @@ import net.minecraft.world.inventory.AbstractMountInventoryMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.MerchantMenu;
-import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractBedBlock;
-import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -49,14 +48,13 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.inventory.CraftContainer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
-import org.bukkit.craftbukkit.inventory.CraftInventorySaddledMount;
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest;
 import org.bukkit.craftbukkit.inventory.CraftInventoryLectern;
 import org.bukkit.craftbukkit.inventory.CraftInventoryPlayer;
+import org.bukkit.craftbukkit.inventory.CraftInventorySaddledMount;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.inventory.CraftMerchantCustom;
-import org.bukkit.craftbukkit.inventory.CraftRecipe;
 import org.bukkit.craftbukkit.inventory.util.CraftMenus;
 import org.bukkit.craftbukkit.util.CraftLocation;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
@@ -142,7 +140,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     @Override
     public ItemStack getItemOnCursor() {
-        return CraftItemStack.asCraftMirror(this.getHandle().containerMenu.getCarried());
+        return CraftItemStack.asBukkitMirror(this.getHandle().containerMenu.getCarried());
     }
 
     @Override
@@ -199,19 +197,19 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         Preconditions.checkArgument(location.getWorld().equals(this.getWorld()), "Cannot sleep across worlds");
 
         BlockPos pos = CraftLocation.toBlockPos(location);
-        BlockState state = this.getHandle().level().getBlockState(pos);
+        Level level = this.getHandle().level();
+        BlockState state = level.getBlockState(pos);
         if (!(state.getBlock() instanceof AbstractBedBlock bedBlock)) {
             return false;
         }
-        final BedRule dimensionValue = bedBlock.getBedRule(this.getHandle().level(), pos);
 
-        if (this.getHandle().startSleepInBed(bedBlock, state,dimensionValue, pos).left().isPresent()) {
+        final BedRule bedRule = bedBlock.getBedRule(level, pos);
+        if (this.getHandle().startSleepInBed(bedBlock, state, bedRule, pos).left().isPresent()) {
             return false;
         }
 
-        // From BlockBed
-        state = state.setValue(BedBlock.OCCUPIED, true);
-        this.getHandle().level().setBlock(pos, state, net.minecraft.world.level.block.Block.UPDATE_INVISIBLE);
+        state = state.setValue(AbstractBedBlock.OCCUPIED, true);
+        level.setBlockAndUpdate(pos, state);
 
         return true;
     }
@@ -709,10 +707,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     @Override
     public int undiscoverRecipes(Collection<NamespacedKey> recipes) {
-        if (this.getHandle() instanceof ServerPlayer player) {
-            return player.resetRecipes(this.bukkitKeysToMinecraftRecipes(recipes));
-        }
-        return 0;
+        return ((ServerPlayer) this.getHandle()).resetRecipes(this.bukkitKeysToMinecraftRecipes(recipes));
     }
 
     @Override

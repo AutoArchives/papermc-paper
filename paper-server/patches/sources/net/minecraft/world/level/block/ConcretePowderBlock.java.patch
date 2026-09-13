@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/ConcretePowderBlock.java
 +++ b/net/minecraft/world/level/block/ConcretePowderBlock.java
-@@ -24,16 +_,33 @@
+@@ -24,16 +_,30 @@
      @Override
      public void onLand(final Level level, final BlockPos pos, final BlockState state, final BlockState replacedBlock, final FallingBlockEntity entity) {
          if (shouldSolidify(level, pos, replacedBlock)) {
@@ -17,23 +17,20 @@
          BlockState replacedBlock = level.getBlockState(pos);
 -        return shouldSolidify(level, pos, replacedBlock) ? this.concrete.defaultBlockState() : super.getStateForPlacement(context);
 +        // CraftBukkit start
-+        if (!ConcretePowderBlock.shouldSolidify(level, pos, replacedBlock)) {
-+            return super.getStateForPlacement(context);
++        if (shouldSolidify(level, pos, replacedBlock)) {
++            // TODO: An event factory call for methods like this
++            org.bukkit.craftbukkit.block.CraftBlockState snapshot = org.bukkit.craftbukkit.block.CraftBlockStates.getBlockState(level, pos);
++            snapshot.setBlock(this.concrete.defaultBlockState());
++
++            org.bukkit.event.block.BlockFormEvent event = new org.bukkit.event.block.BlockFormEvent(snapshot.getBlock(), snapshot);
++            event.callEvent();
++
++            if (!event.isCancelled()) {
++                return snapshot.getHandle();
++            }
 +        }
-+
-+        // TODO: An event factory call for methods like this
-+        org.bukkit.craftbukkit.block.CraftBlockState snapshot = org.bukkit.craftbukkit.block.CraftBlockStates.getBlockState(level, pos);
-+        snapshot.setBlock(this.concrete.defaultBlockState());
-+
-+        org.bukkit.event.block.BlockFormEvent event = new org.bukkit.event.block.BlockFormEvent(snapshot.getBlock(), snapshot);
-+        event.callEvent();
-+
-+        if (!event.isCancelled()) {
-+            return snapshot.getHandle();
-+        }
-+
-+        return super.getStateForPlacement(context);
 +        // CraftBukkit end
++        return super.getStateForPlacement(context);
      }
  
      private static boolean shouldSolidify(final BlockGetter level, final BlockPos pos, final BlockState replacedBlock) {
@@ -45,7 +42,7 @@
 -            ? this.concrete.defaultBlockState()
 -            : super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
 +        // CraftBukkit start
-+        if (ConcretePowderBlock.touchesLiquid(level, pos)) {
++        if (touchesLiquid(level, pos)) {
 +            // Suppress during worldgen
 +            if (!(level instanceof Level world1)) {
 +                return this.concrete.defaultBlockState();

@@ -851,7 +851,7 @@
          } catch (Throwable t) {
              CrashReport report = CrashReport.forThrowable(t, "Saving entity NBT");
              CrashReportCategory category = report.addCategory("Entity being saved");
-@@ -2236,7 +_,20 @@
+@@ -2236,13 +_,27 @@
                  this.setNoGravity(input.getBooleanOr("NoGravity", false));
                  this.setGlowingTag(input.getBooleanOr("Glowing", false));
                  this.setTicksFrozen(input.getIntOr("TicksFrozen", 0));
@@ -873,6 +873,13 @@
                  this.customData = input.read("data", CustomData.CODEC).orElse(CustomData.EMPTY);
                  this.tags.clear();
                  input.read("Tags", TAG_LIST_CODEC).ifPresent(this.tags::addAll);
+                 input.getString("Team").ifPresent(teamName -> {
+                     Scoreboard scoreboard = this.level().getScoreboard();
+                     PlayerTeam team = scoreboard.getPlayerTeam(teamName);
++                    if (!this.level().paperConfig().scoreboards.allowNonPlayerEntitiesOnScoreboards && !(this instanceof Player)) team = null; // Paper - Perf: Disable Scoreboards for non players by default
+                     boolean success = team != null && scoreboard.addPlayerToTeam(this.getStringUUID(), team);
+                     if (!success) {
+                         LOGGER.warn("Unable to add entity to team \"{}\" (that team probably doesn't exist)", teamName);
 @@ -2255,6 +_,54 @@
              } else {
                  throw new IllegalStateException("Entity has invalid rotation");
@@ -966,7 +973,7 @@
 +
 +    public record DefaultDrop(Item item, org.bukkit.inventory.ItemStack stack, java.util.function.@Nullable Consumer<ItemStack> dropConsumer) {
 +        public DefaultDrop(final ItemStack stack, final java.util.function.Consumer<ItemStack> dropConsumer) {
-+            this(stack.getItem(), org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(stack), dropConsumer);
++            this(stack.getItem(), org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(stack), dropConsumer);
 +        }
 +
 +        public void runConsumer(final java.util.function.Consumer<org.bukkit.inventory.ItemStack> fallback) {
@@ -1165,8 +1172,8 @@
  
          if (force || this.canRide(entityToRide) && entityToRide.canAddPassenger(this)) {
 +            // CraftBukkit start
-+            if (entityToRide.getBukkitEntity() instanceof org.bukkit.entity.Vehicle && this.getBukkitEntity() instanceof org.bukkit.entity.LivingEntity) {
-+                org.bukkit.event.vehicle.VehicleEnterEvent event = new org.bukkit.event.vehicle.VehicleEnterEvent((org.bukkit.entity.Vehicle) entityToRide.getBukkitEntity(), this.getBukkitEntity());
++            if (entityToRide.getBukkitEntity() instanceof org.bukkit.entity.Vehicle vehicle && this instanceof LivingEntity entered) {
++                org.bukkit.event.vehicle.VehicleEnterEvent event = new org.bukkit.event.vehicle.VehicleEnterEvent(vehicle, entered.getBukkitEntity());
 +                // Suppress during worldgen
 +                if (this.valid) {
 +                    org.bukkit.Bukkit.getPluginManager().callEvent(event);
@@ -1221,7 +1228,7 @@
      }
  
      protected void addPassenger(final Entity passenger) {
-@@ -2580,11 +_,44 @@
+@@ -2580,11 +_,43 @@
          }
      }
  
@@ -1239,10 +1246,9 @@
 +        // CraftBukkit start
 +        org.bukkit.craftbukkit.entity.CraftEntity craft = (org.bukkit.craftbukkit.entity.CraftEntity) passenger.getBukkitEntity().getVehicle();
 +        Entity orig = craft == null ? null : craft.getHandle();
-+        if (this.getBukkitEntity() instanceof org.bukkit.entity.Vehicle && passenger.getBukkitEntity() instanceof org.bukkit.entity.LivingEntity) {
++        if (this.getBukkitEntity() instanceof org.bukkit.entity.Vehicle vehicle && passenger instanceof LivingEntity exited) {
 +            org.bukkit.event.vehicle.VehicleExitEvent event = new org.bukkit.event.vehicle.VehicleExitEvent(
-+                    (org.bukkit.entity.Vehicle) this.getBukkitEntity(),
-+                    (org.bukkit.entity.LivingEntity) passenger.getBukkitEntity(), !suppressCancellation // Paper - Force entity dismount during teleportation
++                    vehicle, exited.getBukkitEntity(), !suppressCancellation // Paper - Force entity dismount during teleportation
 +            );
 +            // Suppress during worldgen
 +            if (this.valid) {

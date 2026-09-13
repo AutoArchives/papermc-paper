@@ -9,18 +9,17 @@
      protected BlockPos pos;
  
      protected BlockAttachedEntity(final EntityType<? extends BlockAttachedEntity> type, final Level level) {
-@@ -42,11 +_,32 @@
+@@ -42,11 +_,33 @@
      public void tick() {
          if (this.level() instanceof ServerLevel level) {
              this.checkBelowWorld();
 -            if (this.ticksSinceLastCheck++ >= 100) {
-+            if (this.ticksSinceLastCheck++ == this.level().spigotConfig.hangingTickFrequency) { // Spigot
++            if (this.ticksSinceLastCheck++ >= this.level().spigotConfig.hangingTickFrequency) { // Spigot
                  this.ticksSinceLastCheck = 0;
                  this.tickAtCheckInterval();
                  if (!this.isRemoved() && !this.survives()) {
 -                    this.discard();
 +                    // CraftBukkit start - fire break events
-+                    boolean cancelled;
 +                    final io.papermc.paper.event.entity.EntityBreakEvent.RemoveCause cause;
 +                    if (!this.level().getBlockState(this.blockPosition()).isSuffocating(this.level(), this.blockPosition())) {
 +                        cause = io.papermc.paper.event.entity.EntityBreakEvent.RemoveCause.OBSTRUCTION;
@@ -28,13 +27,15 @@
 +                        cause = io.papermc.paper.event.entity.EntityBreakEvent.RemoveCause.PHYSICS;
 +                    }
 +
-+                    final io.papermc.paper.event.entity.EntityBreakEvent event = new io.papermc.paper.event.entity.EntityBreakEvent(this.getBukkitEntity(), cause);
-+                    cancelled = !event.callEvent();
++                    boolean cancelled = false;
 +                    if (this.getBukkitEntity() instanceof org.bukkit.entity.Hanging hanging) {
-+                        final org.bukkit.event.hanging.HangingBreakEvent bukkitEvent = new org.bukkit.event.hanging.HangingBreakEvent(hanging, org.bukkit.event.hanging.HangingBreakEvent.RemoveCause.valueOf(cause.toString()));
-+                        bukkitEvent.setCancelled(cancelled);
++                        final org.bukkit.event.hanging.HangingBreakEvent bukkitEvent = new org.bukkit.event.hanging.HangingBreakEvent(hanging, org.bukkit.event.hanging.HangingBreakEvent.RemoveCause.valueOf(cause.name()));
 +                        cancelled = !bukkitEvent.callEvent();
 +                    }
++
++                    final io.papermc.paper.event.entity.EntityBreakEvent event = new io.papermc.paper.event.entity.EntityBreakEvent(this.getBukkitEntity(), cause);
++                    event.setCancelled(cancelled);
++                    cancelled = !event.callEvent();
 +
 +                    if (this.isRemoved() || cancelled) {
 +                        return;
@@ -49,27 +50,27 @@
  
          if (!this.isRemoved()) {
 +            // CraftBukkit start - fire break events
-+            boolean cancelled;
-+            final Entity damager = source.getDirectEntity();
-+            final org.bukkit.damage.DamageSource craftDamageSource = new org.bukkit.craftbukkit.damage.CraftDamageSource(source);
++            boolean cancelled = false;
++            Entity damager = source.getDirectEntity();
++            org.bukkit.damage.DamageSource craftDamageSource = new org.bukkit.craftbukkit.damage.CraftDamageSource(source);
++            if (this.getBukkitEntity() instanceof org.bukkit.entity.Hanging hanging) {
++                final org.bukkit.event.hanging.HangingBreakEvent bukkitEvent;
++                if (damager != null) {
++                    bukkitEvent = new org.bukkit.event.hanging.HangingBreakByEntityEvent(hanging, damager.getBukkitEntity(), craftDamageSource, source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION) ? org.bukkit.event.hanging.HangingBreakEvent.RemoveCause.EXPLOSION : org.bukkit.event.hanging.HangingBreakEvent.RemoveCause.ENTITY);
++                } else {
++                    bukkitEvent = new org.bukkit.event.hanging.HangingBreakEvent(hanging, source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION) ? org.bukkit.event.hanging.HangingBreakEvent.RemoveCause.EXPLOSION : org.bukkit.event.hanging.HangingBreakEvent.RemoveCause.DEFAULT);
++                }
++                cancelled = !bukkitEvent.callEvent();
++            }
++
 +            final io.papermc.paper.event.entity.EntityBreakEvent event;
 +            if (damager != null) {
 +                event = new io.papermc.paper.event.entity.EntityBreakByEntityEvent(this.getBukkitEntity(), damager.getBukkitEntity(), craftDamageSource, source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION) ? io.papermc.paper.event.entity.EntityBreakEvent.RemoveCause.EXPLOSION : io.papermc.paper.event.entity.EntityBreakEvent.RemoveCause.ENTITY);
 +            } else {
 +                event = new io.papermc.paper.event.entity.EntityBreakEvent(this.getBukkitEntity(), source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION) ? io.papermc.paper.event.entity.EntityBreakEvent.RemoveCause.EXPLOSION : io.papermc.paper.event.entity.EntityBreakEvent.RemoveCause.DEFAULT);
 +            }
++            event.setCancelled(cancelled);
 +            cancelled = !event.callEvent();
-+
-+            if (this.getBukkitEntity() instanceof org.bukkit.entity.Hanging hanging) {
-+                final org.bukkit.event.hanging.HangingBreakEvent bukkitEvent;
-+                if (damager != null) {
-+                    bukkitEvent = new org.bukkit.event.hanging.HangingBreakByEntityEvent(hanging, damager.getBukkitEntity(), craftDamageSource, org.bukkit.event.hanging.HangingBreakEvent.RemoveCause.valueOf(event.getCause().toString()));
-+                } else {
-+                    bukkitEvent = new org.bukkit.event.hanging.HangingBreakEvent(hanging, org.bukkit.event.hanging.HangingBreakEvent.RemoveCause.valueOf(event.getCause().toString()));
-+                }
-+                bukkitEvent.setCancelled(cancelled);
-+                cancelled = !bukkitEvent.callEvent();
-+            }
 +
 +            if (this.isRemoved() || cancelled) {
 +                return true;

@@ -12,11 +12,11 @@ import org.jspecify.annotations.Nullable;
 import static io.papermc.paper.registry.data.util.Checks.asArgument;
 import static io.papermc.paper.registry.data.util.Checks.asConfigured;
 
-public class PaperPotPatternRegistryEntry implements PotPatternRegistryEntry {
+public class PaperDecoratedPotPatternRegistryEntry implements DecoratedPotPatternRegistryEntry {
 
     protected @Nullable Identifier assetId;
 
-    public PaperPotPatternRegistryEntry(
+    public PaperDecoratedPotPatternRegistryEntry(
         final Conversions ignoredConversions,
         final @Nullable DecoratedPotPattern internal
     ) {
@@ -30,7 +30,7 @@ public class PaperPotPatternRegistryEntry implements PotPatternRegistryEntry {
         return PaperAdventure.asAdventure(asConfigured(this.assetId, "assetId"));
     }
 
-    public static final class PaperBuilder extends PaperPotPatternRegistryEntry implements Builder, PaperRegistryBuilder<DecoratedPotPattern, PotPatternType> {
+    public static final class PaperBuilder extends PaperDecoratedPotPatternRegistryEntry implements Builder, PaperRegistryBuilder<DecoratedPotPattern, PotPatternType> {
 
         public PaperBuilder(final Conversions conversions, final @Nullable DecoratedPotPattern internal) {
             super(conversions, internal);

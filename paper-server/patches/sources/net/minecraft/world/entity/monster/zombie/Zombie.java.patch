@@ -27,7 +27,7 @@
              serverLevel.getCurrentDifficultyAt(converted.blockPosition()).getSpecialMultiplier(), EntitySpawnReason.CONVERSION
          )
 -    );
-+    ).withTransformReason(org.bukkit.event.entity.EntityTransformEvent.TransformReason.DROWNED).withSpawnReason(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DROWNED); // Paper - Spawn reason for drownned
++    ).setEventReasons(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DROWNED, org.bukkit.event.entity.EntityTransformEvent.TransformReason.DROWNED); // Paper - Spawn reason for drownned
 +    private boolean shouldBurnInDay = true; // Paper - Add more Zombie API
  
      public Zombie(final EntityType<? extends Zombie> type, final Level level) {

@@ -19,7 +19,7 @@
  
      public static List<MobCategory> getFilteredSpawningCategories(
 -        final NaturalSpawner.SpawnState state, final boolean spawnEnemies, final boolean spawnPersistent
-+        final NaturalSpawner.SpawnState state, final boolean spawnFriendlies, final boolean spawnEnemies, final boolean spawnPersistent, final ServerLevel level // CraftBukkit - add server level/spawnFriendlies
++        final NaturalSpawner.SpawnState state, final boolean spawnFriendlies, final boolean spawnEnemies, final boolean spawnPersistent, final ServerLevel level // CraftBukkit - add level/spawnFriendlies
      ) {
 +        net.minecraft.world.level.storage.LevelData worlddata = level.getLevelData(); // CraftBukkit - Other mob type spawn tick rate
          List<MobCategory> spawningCategories = new ArrayList<>(SPAWNING_CATEGORIES.length);

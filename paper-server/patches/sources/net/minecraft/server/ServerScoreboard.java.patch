@@ -16,7 +16,7 @@
          super.onPlayerRemoved(player);
          if (!this.trackedObjectives.isEmpty()) {
 -            this.server.getPlayerList().broadcastAll(new ClientboundResetScorePacket(player.getScoreboardName(), null));
-+            broadcastAll(new ClientboundResetScorePacket(player.getScoreboardName(), null));
++            this.broadcastAll(new ClientboundResetScorePacket(player.getScoreboardName(), null)); // CraftBukkit
          }
  
          this.setDirty();

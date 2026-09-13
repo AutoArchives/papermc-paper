@@ -409,8 +409,8 @@
 +            xp = event.getExpToDrop();
 +        }
 +        // Paper end - BlockDestroyEvent
-+        if (playEffect && !(blockState.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock)) { // Paper - BlockDestroyEvent
-+            effectType.getBlock().spawnDestroyParticles(this, pos, effectType);; // Paper - BlockDestroyEvent
++        if (playEffect) { // Paper - BlockDestroyEvent
++            effectType.getBlock().spawnDestroyParticles(this, pos, effectType); // Paper - BlockDestroyEvent
 +        }
 +
          if (dropResources) {
@@ -421,7 +421,7 @@
          }
  
 -        FluidState fluidState = this.getFluidState(pos);
-+        //FluidState fluidState = this.getFluidState(pos); // Paper - move up
++        // FluidState fluidState = this.getFluidState(pos); // Paper - move up
          boolean destroyed = this.setBlock(pos, fluidState.createLegacyBlock(), Block.UPDATE_ALL, updateLimit);
          if (destroyed) {
              this.gameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Context.of(breaker, blockState));

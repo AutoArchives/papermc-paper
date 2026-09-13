@@ -5,7 +5,7 @@
          this.currentMoveDirection = Direction.UP;
          this.selectNextMoveDirection(invalidStartAxis, target);
 -    }
-+        this.projectileSource = owner.getBukkitLivingEntity(); // CraftBukkit
++        this.projectileSource = owner.getBukkitEntity(); // CraftBukkit
 +    }
 +
 +    // CraftBukkit start

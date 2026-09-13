@@ -2,7 +2,9 @@ package io.papermc.paper.util;
 
 import java.util.Set;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.world.level.material.PushReaction;
 import org.bukkit.Particle;
+import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.entity.Pose;
 import org.bukkit.support.environment.Normal;
 import org.junit.jupiter.api.Assertions;
@@ -16,14 +18,15 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class EnumCloneTests {
 
     public enum ValidationType {
-        SAME_NAME, // ensure twos enums have the same names useful compromise when an EnumCloneRewriter cannot be used
+        SAME_NAME, // ensure two enums have the same names useful compromise when EnumCloneRewriter cannot be used
         SAME_ORDER // can't really enforce but still check the length
     }
 
     public static Set<Arguments> params() {
         return Set.of(
             arguments(Particle.RandomizationType.class, ClientboundLevelParticlesPacket.RandomizationType.class, ValidationType.SAME_NAME),
-            arguments(Pose.class, net.minecraft.world.entity.Pose.class, ValidationType.SAME_ORDER)
+            arguments(Pose.class, net.minecraft.world.entity.Pose.class, ValidationType.SAME_ORDER),
+            arguments(PistonMoveReaction.class, PushReaction.class, ValidationType.SAME_ORDER)
         );
     }
 

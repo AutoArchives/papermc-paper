@@ -6,12 +6,12 @@
      @Override
 -    protected void removePassenger(final Entity passenger) {
 -        super.removePassenger(passenger);
-+    // Paper start - cancellable passengers
++    // Paper start - Force entity dismount during teleportation
 +    protected boolean removePassenger(final Entity passenger, final boolean suppressCancellation) {
 +        if (!super.removePassenger(passenger, suppressCancellation)) {
 +            return false;
 +        }
-+        // Paper end - cancellable passengers
++        // Paper end - Force entity dismount during teleportation
          if (!this.level().isClientSide()) {
              this.setServerStillTimeout(10);
          }
@@ -19,7 +19,7 @@
              this.clearHome();
              this.playSound(SoundEvents.HARNESS_GOGGLES_UP);
          }
-+        return true; // Paper - cancellable passengers
++        return true; // Paper
      }
  
      @Override

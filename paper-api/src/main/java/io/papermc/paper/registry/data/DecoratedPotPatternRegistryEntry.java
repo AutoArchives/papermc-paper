@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Contract;
  * A data-centric version-specific registry entry for the {@link PotPatternType} type.
  */
 @ApiStatus.NonExtendable
-public interface PotPatternRegistryEntry {
+public interface DecoratedPotPatternRegistryEntry {
 
     /**
      * Provides the asset id of the pattern type, which is the location of the sprite to use.
@@ -20,7 +20,7 @@ public interface PotPatternRegistryEntry {
     Key assetId();
 
     /**
-     * A mutable builder for the {@link PotPatternRegistryEntry} plugins may change in applicable registry events.
+     * A mutable builder for the {@link DecoratedPotPatternRegistryEntry} plugins may change in applicable registry events.
      * <p>
      * The following values are required for each builder:
      * <ul>
@@ -28,14 +28,14 @@ public interface PotPatternRegistryEntry {
      * </ul>
      */
     @ApiStatus.NonExtendable
-    interface Builder extends PotPatternRegistryEntry, RegistryBuilder<PotPatternType> {
+    interface Builder extends DecoratedPotPatternRegistryEntry, RegistryBuilder<PotPatternType> {
 
         /**
          * Sets the asset id of the pattern type, which is the location of the sprite to use.
          *
          * @param assetId the asset id
          * @return this builder instance
-         * @see PotPatternRegistryEntry#assetId()
+         * @see DecoratedPotPatternRegistryEntry#assetId()
          */
         @Contract(value = "_ -> this", mutates = "this")
         Builder assetId(Key assetId);

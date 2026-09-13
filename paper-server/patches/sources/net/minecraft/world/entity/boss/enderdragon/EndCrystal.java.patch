@@ -12,7 +12,7 @@
          if (this.level() instanceof ServerLevel serverLevel) {
              BlockPos pos = this.blockPosition();
              if (serverLevel.getDragonFight() != null && serverLevel.getBlockState(pos).isAir()) {
-+                if (!org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(this.level(), pos, this).isCancelled()) { // Paper
++                if (!org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(serverLevel, pos, this).isCancelled()) { // Paper
                  serverLevel.setBlockAndUpdate(pos, BaseFireBlock.getState(serverLevel, pos));
 -            }
 -        }

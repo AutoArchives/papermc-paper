@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/FarmlandBlock.java
 +++ b/net/minecraft/world/level/block/FarmlandBlock.java
-@@ -89,32 +_,60 @@
+@@ -89,32 +_,57 @@
      @Override
      protected void randomTick(final BlockState state, final ServerLevel level, final BlockPos pos, final RandomSource random) {
          int moisture = state.getValue(MOISTURE);
@@ -27,23 +27,23 @@
                  ? !level.getServer().isUnderSpawnProtection(serverLevel, pos, player)
                  : serverLevel.getGameRules().get(GameRules.MOB_GRIEFING);
              if (canTrample && entity.getBbWidth() * entity.getBbWidth() * entity.getBbHeight() > 0.512F) {
-+            // CraftBukkit start - Interact soil
-+            org.bukkit.event.Cancellable cancellable;
-+            if (entity instanceof Player) {
-+                cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, pos, null, null, null);
-+            } else {
-+                cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos));
-+                level.getCraftServer().getPluginManager().callEvent((org.bukkit.event.entity.EntityInteractEvent) cancellable);
-+            }
++                // CraftBukkit start - Interact soil
++                org.bukkit.event.Cancellable cancellable;
++                if (entity instanceof Player) {
++                    cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((Player) entity, org.bukkit.event.block.Action.PHYSICAL, pos, null, null, null);
++                } else {
++                    cancellable = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos));
++                    level.getCraftServer().getPluginManager().callEvent((org.bukkit.event.entity.EntityInteractEvent) cancellable);
++                }
 +
-+            if (cancellable.isCancelled()) {
-+                return;
-+            }
++                if (cancellable.isCancelled()) {
++                    return;
++                }
 +
-+            if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(entity, pos, Blocks.DIRT.defaultBlockState())) {
-+                return;
-+            }
-+            // CraftBukkit end
++                if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(entity, pos, this.baseBlock.defaultBlockState())) {
++                    return;
++                }
++                // CraftBukkit end
                  this.turnToBaseBlock(entity, state, level, pos);
              }
          }
@@ -54,11 +54,8 @@
  
      public void turnToBaseBlock(final @Nullable Entity sourceEntity, final BlockState state, final Level level, final BlockPos pos) {
 +        // CraftBukkit start
-+        if (sourceEntity == null) {
-+            if (org.bukkit.craftbukkit.event.CraftEventFactory
-+                .callBlockFadeEvent(level, pos, Blocks.DIRT.defaultBlockState()).isCancelled()) {
-+                return;
-+            }
++        if (sourceEntity == null && org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(level, pos, this.baseBlock.defaultBlockState()).isCancelled()) {
++            return;
 +        }
 +        // CraftBukkit end
          BlockState newState = pushEntitiesUp(state, this.baseBlock.defaultBlockState(), level, pos);

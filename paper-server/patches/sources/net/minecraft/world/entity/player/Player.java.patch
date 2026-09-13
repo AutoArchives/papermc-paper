@@ -398,7 +398,7 @@
          this.inventoryMenu.removed(this);
          if (this.hasContainerOpen()) {
              this.doCloseContainer();
-@@ -1311,6 +_,15 @@
+@@ -1311,6 +_,14 @@
      public Either<Player.BedSleepingProblem, Unit> startSleepInBed(
          final AbstractBedBlock bedBlock, final BlockState bedBlockState, final BedRule rule, final BlockPos pos
      ) {
@@ -407,8 +407,7 @@
 +    }
 +
 +    public Either<Player.BedSleepingProblem, Unit> startSleepInBed(
-+        final AbstractBedBlock bedBlock, final BlockState bedBlockState, final BedRule rule, final BlockPos pos
-+        , boolean force // Paper - add force
++        final AbstractBedBlock bedBlock, final BlockState bedBlockState, final BedRule rule, final BlockPos pos, final boolean force // Paper - add force
 +    ) {
 +        // CraftBukkit end
          if (!this.startSleeping(pos)) {
@@ -540,8 +539,8 @@
 +        if (!(this instanceof final ServerPlayer serverPlayer)) return true;
 +        final boolean notCancelled = new com.destroystokyo.paper.event.player.PlayerReadyArrowEvent(
 +            serverPlayer.getBukkitEntity(),
-+            org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(bow),
-+            org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemstack)
++            org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(bow),
++            org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(itemstack)
 +        ).callEvent();
 +        if (!notCancelled) cancelled.setValue(true);
 +        return notCancelled;

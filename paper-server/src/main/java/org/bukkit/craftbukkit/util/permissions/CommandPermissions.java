@@ -98,9 +98,9 @@ public final class CommandPermissions {
         DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "weather", "Allows the user to set the weather", PermissionDefault.OP, commands);
         DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "whitelist", "Allows the user to manage the server whitelist", PermissionDefault.OP, commands);
         DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "worldborder", "Allows the user to manage the world border", PermissionDefault.OP, commands);
-        DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "stopwatch", "Allows the user to use the /stopwatch command", PermissionDefault.OP, commands);
-        DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "compute", "Allows the user to use the /compute command", PermissionDefault.OP, commands);
-        DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "posteffect", "Allows the user to use the /posteffect command", PermissionDefault.OP, commands);
+        DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "stopwatch", "Allows the user to time an action tracking real time", PermissionDefault.OP, commands);
+        DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "compute", "Allows the user to compute a number from different context", PermissionDefault.OP, commands);
+        DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "posteffect", "Allows the user to manage post effect shaders", PermissionDefault.OP, commands);
 
         DefaultPermissions.registerPermission("minecraft.admin.command_feedback", "Receive command broadcasts when sendCommandFeedback is true", PermissionDefault.OP, commands);
 

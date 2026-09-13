@@ -5,10 +5,10 @@
              return this;
          }
 +
-+        // Paper start - expose lines from mutable
++        // Paper start - expose lines
 +        public Component getLine(final int index, final boolean shouldFilter) {
-+            return (shouldFilter ? filteredMessages : messages)[index];
++            return (shouldFilter ? this.filteredMessages : this.messages)[index];
 +        }
-+        // Paper end - expose lines from mutable
++        // Paper end - expose lines
      }
  }

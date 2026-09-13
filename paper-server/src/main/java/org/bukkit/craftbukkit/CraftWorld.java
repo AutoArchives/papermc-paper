@@ -274,7 +274,9 @@ public class CraftWorld extends CraftRegionAccessor implements World {
         return new BiomeProvider() {
             @Override
             public Biome getBiome(final org.bukkit.generator.WorldInfo worldInfo, final int x, final int y, final int z) {
-                return CraftBiome.minecraftHolderToBukkit(resolver.getNoiseBiome(x >> 2, y >> 2, z >> 2));
+                return CraftBiome.minecraftHolderToBukkit(resolver.getNoiseBiome(
+                    QuartPos.fromBlock(x), QuartPos.fromBlock(y), QuartPos.fromBlock(z))
+                );
             }
 
             @Override
@@ -1751,15 +1753,15 @@ public class CraftWorld extends CraftRegionAccessor implements World {
             Preconditions.checkArgument(particle.getDataType().isInstance(data), "data (%s) should be %s", data.getClass(), particle.getDataType());
         }
         this.getHandle().sendParticlesSource(
-            receivers == null ? this.getHandle().players() : Lists.transform(receivers, player -> ((CraftPlayer) player).getHandle()), // Paper -  Particle API
-            sender != null ? ((CraftPlayer) sender).getHandle() : null, // Sender // Paper - Particle API
-            CraftParticle.createParticleParam(particle, data), // Particle
+            receivers == null ? this.getHandle().players() : Lists.transform(receivers, player -> ((CraftPlayer) player).getHandle()),
+            sender != null ? ((CraftPlayer) sender).getHandle() : null,
+            CraftParticle.createParticleParam(particle, data),
             force,
             false,
-            x, y, z, // Position
-            count, // Count
-            offsetX, offsetY, offsetZ, // Random offset
-            speedX, speedY, speedZ, // Speed
+            x, y, z,
+            count,
+            offsetX, offsetY, offsetZ,
+            speedX, speedY, speedZ,
             ClientboundLevelParticlesPacket.RandomizationType.valueOf(randomizationType.name())
         );
 
@@ -1950,7 +1952,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public Collection<GeneratedStructure> getStructures(int x, int z) {
-        return this.getStructures(x, z, struct -> true);
+        return this.getStructures(x, z, _ -> true);
     }
 
     @Override

@@ -1,19 +1,17 @@
 --- a/net/minecraft/world/level/block/LecternBlock.java
 +++ b/net/minecraft/world/level/block/LecternBlock.java
-@@ -134,8 +_,25 @@
-     private static void placeBook(
+@@ -135,7 +_,24 @@
          final @Nullable LivingEntity sourceEntity, final Level level, final BlockPos pos, final BlockState state, final ItemStack book
      ) {
--        if (level.getBlockEntity(pos) instanceof LecternBlockEntity lectern) {
+         if (level.getBlockEntity(pos) instanceof LecternBlockEntity lectern) {
 -            lectern.setBook(book.consumeAndReturn(1, sourceEntity));
-+        if (level.getBlockEntity(pos) instanceof final LecternBlockEntity lectern) {
 +            // Paper start - Add PlayerInsertLecternBookEvent
 +            ItemStack eventSourcedBookStack = null;
 +            if (sourceEntity instanceof final net.minecraft.server.level.ServerPlayer serverPlayer) {
 +                final io.papermc.paper.event.player.PlayerInsertLecternBookEvent event = new io.papermc.paper.event.player.PlayerInsertLecternBookEvent(
 +                    serverPlayer.getBukkitEntity(),
 +                    org.bukkit.craftbukkit.block.CraftBlock.at(level, pos),
-+                    org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(book.copyWithCount(1))
++                    org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(book.copyWithCount(1))
 +                );
 +                if (!event.callEvent()) return;
 +                eventSourcedBookStack = org.bukkit.craftbukkit.inventory.CraftItemStack.unwrap(event.getBook());

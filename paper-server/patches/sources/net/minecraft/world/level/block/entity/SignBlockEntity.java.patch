@@ -1,12 +1,13 @@
 --- a/net/minecraft/world/level/block/entity/SignBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SignBlockEntity.java
-@@ -61,10 +_,15 @@
+@@ -61,10 +_,16 @@
      }
  
      public SignTextSlot getSlotPlayerIsFacing(final Player player) {
 +        // Paper start - More Sign Block API
 +        return this.getSlotPlayerIsFacing(player.getX(), player.getZ());
 +    }
++
 +    public SignTextSlot getSlotPlayerIsFacing(final double x, final double z) {
 +        // Paper end - More Sign Block API
          if (this.getBlockState().getBlock() instanceof SignBlock sign) {
@@ -65,10 +66,10 @@
 +        }
 +
 +        org.bukkit.event.block.SignChangeEvent event = new org.bukkit.event.block.SignChangeEvent(
-+            org.bukkit.craftbukkit.block.CraftBlock.at(signBlockEntity.level, signBlockEntity.worldPosition),
++            org.bukkit.craftbukkit.block.CraftBlock.at(signBlockEntity.getLevel(), signBlockEntity.getBlockPos()),
 +            apiPlayer,
 +            new java.util.ArrayList<>(componentLines),
-+            (slot == net.minecraft.world.level.block.entity.SignTextSlot.FRONT) ? org.bukkit.block.sign.Side.FRONT : org.bukkit.block.sign.Side.BACK
++            org.bukkit.craftbukkit.block.sign.CraftSignSide.fromVanilla(slot)
 +        );
 +        if (!event.callEvent()) {
 +            return originalText;
@@ -100,7 +101,7 @@
 +                            commandLine,
 +                            new org.bukkit.craftbukkit.util.LazyPlayerSet(level.getServer()),
 +                            (org.bukkit.block.Sign) org.bukkit.craftbukkit.block.CraftBlock.at(this.level, this.worldPosition).getState(),
-+                            slot == net.minecraft.world.level.block.entity.SignTextSlot.FRONT ? org.bukkit.block.sign.Side.FRONT : org.bukkit.block.sign.Side.BACK
++                            org.bukkit.craftbukkit.block.sign.CraftSignSide.fromVanilla(slot)
 +                        );
 +                        if (!bukkitEvent.callEvent()) {
 +                            return false;
@@ -142,7 +143,7 @@
 +        }
 +    };
 +    private CommandSourceStack createCommandSourceStack(final @Nullable Player player, final ServerLevel level, final BlockPos pos) {
-+        final CommandSource commandSource = level.paperConfig().misc.showSignClickCommandFailureMsgsToPlayer ? new io.papermc.paper.commands.DelegatingCommandSource(this.commandSource) {
++        CommandSource commandSource = level.paperConfig().misc.showSignClickCommandFailureMsgsToPlayer ? new io.papermc.paper.commands.DelegatingCommandSource(this.commandSource) {
 +            @Override
 +            public void sendSystemMessage(Component message) {
 +                if (player instanceof final net.minecraft.server.level.ServerPlayer serverPlayer) {

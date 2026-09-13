@@ -53,7 +53,7 @@
 +        } else {
 +            newTotalTicks = totalTicks; // just pass it through
 +        }
-+        if (clockManager.getInstance(clock).totalTicks() == newTotalTicks) {
++        if (currentTotalTicks == newTotalTicks) {
 +            throw ERROR_ALREADY_AT_TIME.create(clock.getRegisteredName(), newTotalTicks);
          }
  
@@ -84,7 +84,7 @@
      private static int setTimeToTimeMarker(final CommandSourceStack source, final Holder<WorldClock> clock, final ResourceKey<ClockTimeMarker> timeMarkerId) throws CommandSyntaxException {
 -        ServerClockManager clockManager = source.getServer().clockManager();
 -        ServerClockManager.MoveResult moveResult = clockManager.moveToTimeMarker(clock, timeMarkerId);
-+        ServerClockManager clockManager = source.getLevel().clockManager(); // Paper - per world time
++        ServerClockManager clockManager = source.getLevel().clockManager(); // Paper - per-world time
 +        ServerClockManager.MoveResult moveResult = moveToTimeMarker(clock, timeMarkerId, clockManager, source); // Paper - time skip event
          String clockName = clock.getRegisteredName();
          String timeMarkerName = timeMarkerId.identifier().toString();

@@ -5,7 +5,7 @@
  
      @Override
 -    public boolean isStructureChunk(final ChunkGeneratorStructureState state, final int sourceX, final int sourceZ) {
-+    public boolean isStructureChunk(final ChunkGeneratorStructureState state, final int sourceX, final int sourceZ, final net.minecraft.resources.@org.jspecify.annotations.Nullable ResourceKey<net.minecraft.world.level.levelgen.structure.StructureSet> structureSetKey) { // Paper - Add missing structure set seed configs
++    public boolean isStructureChunk(final ChunkGeneratorStructureState state, final int sourceX, final int sourceZ, final net.minecraft.resources.@org.jspecify.annotations.Nullable ResourceKey<net.minecraft.world.level.levelgen.structure.StructureSet> structureSet) { // Paper - Add missing structure set seed configs
          ChunkPos origin = state.getDimensionOrigin();
          return origin.x() == sourceX && origin.z() == sourceZ;
      }

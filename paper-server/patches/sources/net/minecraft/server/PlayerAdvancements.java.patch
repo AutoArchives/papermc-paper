@@ -25,7 +25,7 @@
                  LOGGER.warn("Ignored advancement '{}' in progress file {} - it doesn't exist anymore?", id, this.playerSavePath);
              } else {
                  this.startProgress(advancement, progress);
-@@ -169,14 +_,31 @@
+@@ -169,14 +_,30 @@
          AdvancementProgress progress = this.getOrStartProgress(holder);
          boolean wasDone = progress.isDone();
          if (progress.grantProgress(criterion)) {
@@ -40,11 +40,10 @@
              result = true;
              if (!wasDone && progress.isDone()) {
 +                // Paper start - Add Adventure message to PlayerAdvancementDoneEvent
-+                final net.kyori.adventure.text.Component message = holder.value().display().flatMap(info -> {
-+                    return java.util.Optional.ofNullable(
-+                        info.announceToChat() ? io.papermc.paper.adventure.PaperAdventure.asAdventure(info.type().createAnnouncement(holder, this.player)) : null
-+                    );
-+                }).orElse(null);
++                final net.kyori.adventure.text.Component message = holder.value().display()
++                    .filter(net.minecraft.advancements.DisplayInfo::announceToChat)
++                    .map(display -> io.papermc.paper.adventure.PaperAdventure.asAdventure(display.type().createAnnouncement(holder, this.player)))
++                    .orElse(null);
 +                final org.bukkit.event.player.PlayerAdvancementDoneEvent event = new org.bukkit.event.player.PlayerAdvancementDoneEvent(this.player.getBukkitEntity(), holder.toBukkit(), message);
 +                this.player.level().getCraftServer().getPluginManager().callEvent(event); // CraftBukkit
 +                // Paper end
@@ -64,7 +63,7 @@
          if (this.isFirstPacket || !this.rootsToUpdate.isEmpty() || !this.progressChanged.isEmpty()) {
              Map<Identifier, AdvancementProgress> progress = new HashMap<>();
 -            Set<AdvancementNode> added = new HashSet<>();
-+            Set<AdvancementNode> added = new java.util.TreeSet<>(java.util.Comparator.comparing(adv -> adv.holder().id().toString())); // Paper - Changed from HashSet to TreeSet ordered alphabetically.
++            Set<AdvancementNode> added = new java.util.TreeSet<>(java.util.Comparator.comparing(node -> node.holder().id().toString())); // Paper - Changed from HashSet to TreeSet ordered alphabetically.
              Set<Identifier> removed = new HashSet<>();
  
              for (AdvancementNode root : this.rootsToUpdate) {

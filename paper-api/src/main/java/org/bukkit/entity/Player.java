@@ -1124,7 +1124,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * (constructed e.g. via {@link Material#createBlockData()})
      */
     @Deprecated
-    default void sendSignChange(Location loc, java.util.@Nullable List<? extends net.kyori.adventure.text.Component> lines) throws IllegalArgumentException {
+    default void sendSignChange(Location loc, java.util.@Nullable List<? extends net.kyori.adventure.text.Component> lines) {
         this.sendSignChange(loc, lines, DyeColor.BLACK);
     }
 
@@ -1140,17 +1140,17 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      *
      * @param loc the location of the sign
      * @param lines the new text on the sign or null to clear it
-     * @param dyeColor the color of the sign
+     * @param color the color of the sign
      * @throws IllegalArgumentException if location is null
-     * @throws IllegalArgumentException if dyeColor is null
+     * @throws IllegalArgumentException if color is null
      * @throws IllegalArgumentException if lines is non-null and has a length less than 4
      * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
      * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
      * (constructed e.g. via {@link Material#createBlockData()})
      */
     @Deprecated
-    default void sendSignChange(Location loc, java.util.@Nullable List<? extends net.kyori.adventure.text.Component> lines, DyeColor dyeColor) throws IllegalArgumentException {
-        this.sendSignChange(loc, lines, dyeColor, false);
+    default void sendSignChange(Location loc, java.util.@Nullable List<? extends net.kyori.adventure.text.Component> lines, DyeColor color) {
+        this.sendSignChange(loc, lines, color, false);
     }
 
     /**
@@ -1174,7 +1174,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * (constructed e.g. via {@link Material#createBlockData()})
      */
     @Deprecated
-    default void sendSignChange(Location loc, java.util.@Nullable List<? extends net.kyori.adventure.text.Component> lines, boolean hasGlowingText) throws IllegalArgumentException {
+    default void sendSignChange(Location loc, java.util.@Nullable List<? extends net.kyori.adventure.text.Component> lines, boolean hasGlowingText) {
         this.sendSignChange(loc, lines, DyeColor.BLACK, hasGlowingText);
     }
 
@@ -1190,18 +1190,17 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      *
      * @param loc the location of the sign
      * @param lines the new text on the sign or null to clear it
-     * @param dyeColor the color of the sign
+     * @param color the color of the sign
      * @param hasGlowingText whether the text of the sign should glow as if dyed with a glowing ink sac
      * @throws IllegalArgumentException if location is null
-     * @throws IllegalArgumentException if dyeColor is null
+     * @throws IllegalArgumentException if color is null
      * @throws IllegalArgumentException if lines is non-null and has a length less than 4
      * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
      * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
      * (constructed e.g. via {@link Material#createBlockData()})
      */
     @Deprecated
-    void sendSignChange(Location loc, java.util.@Nullable List<? extends net.kyori.adventure.text.Component> lines, DyeColor dyeColor, boolean hasGlowingText)
-        throws IllegalArgumentException;
+    void sendSignChange(Location loc, java.util.@Nullable List<? extends net.kyori.adventure.text.Component> lines, DyeColor color, boolean hasGlowingText);
     // Paper end
 
     /**
@@ -1226,7 +1225,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      * (constructed e.g. via {@link Material#createBlockData()})
      */
     @Deprecated // Paper
-    public void sendSignChange(Location loc, @Nullable String @Nullable [] lines) throws IllegalArgumentException;
+    default void sendSignChange(Location loc, @Nullable String @Nullable [] lines) {
+        this.sendSignChange(loc, lines, DyeColor.BLACK);
+    }
 
     /**
      * Send a sign change. This fakes a sign change packet for a user at
@@ -1243,16 +1244,18 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      *
      * @param loc the location of the sign
      * @param lines the new text on the sign or null to clear it
-     * @param dyeColor the color of the sign
+     * @param color the color of the sign
      * @throws IllegalArgumentException if location is null
-     * @throws IllegalArgumentException if dyeColor is null
+     * @throws IllegalArgumentException if color is null
      * @throws IllegalArgumentException if lines is non-null and has a length less than 4
      * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
      * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
      * (constructed e.g. via {@link Material#createBlockData()})
      */
     @Deprecated // Paper
-    public void sendSignChange(Location loc, @Nullable String @Nullable [] lines, DyeColor dyeColor) throws IllegalArgumentException;
+    default void sendSignChange(Location loc, @Nullable String @Nullable [] lines, DyeColor color) {
+        this.sendSignChange(loc, lines, color, false);
+    }
 
     /**
      * Send a sign change. This fakes a sign change packet for a user at
@@ -1269,17 +1272,17 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      *
      * @param loc the location of the sign
      * @param lines the new text on the sign or null to clear it
-     * @param dyeColor the color of the sign
+     * @param color the color of the sign
      * @param hasGlowingText if the sign's text should be glowing
      * @throws IllegalArgumentException if location is null
-     * @throws IllegalArgumentException if dyeColor is null
+     * @throws IllegalArgumentException if color is null
      * @throws IllegalArgumentException if lines is non-null and has a length less than 4
      * @deprecated Use {@link #sendBlockUpdate(Location, TileState)} by creating a new virtual
      * {@link org.bukkit.block.Sign} block state via {@link BlockData#createBlockState()}
      * (constructed e.g. via {@link Material#createBlockData()})
      */
     @Deprecated // Paper
-    public void sendSignChange(Location loc, @Nullable String @Nullable [] lines, DyeColor dyeColor, boolean hasGlowingText) throws IllegalArgumentException;
+    public void sendSignChange(Location loc, @Nullable String @Nullable [] lines, DyeColor color, boolean hasGlowingText);
 
     /**
      * Send a TileState change. This fakes a TileState change for a user at

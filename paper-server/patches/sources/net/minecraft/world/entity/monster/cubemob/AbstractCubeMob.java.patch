@@ -114,7 +114,7 @@
 +            if (!this.cubeMob.canAttack(target)) {
 +                return false;
 +            }
-+            return this.cubeMob.getMoveControl() instanceof AbstractCubeMob.CubeMobMoveControl && this.cubeMob.canWander && new com.destroystokyo.paper.event.entity.SlimeTargetLivingEntityEvent((org.bukkit.entity.AbstractCubeMob) this.cubeMob.getBukkitEntity(), (org.bukkit.entity.LivingEntity) target.getBukkitEntity()).callEvent();
++            return this.cubeMob.getMoveControl() instanceof AbstractCubeMob.CubeMobMoveControl && this.cubeMob.canWander && new com.destroystokyo.paper.event.entity.SlimeTargetLivingEntityEvent((org.bukkit.entity.AbstractCubeMob) this.cubeMob.getBukkitEntity(), target.getBukkitEntity()).callEvent();
 +            // Paper end - Slime pathfinder events
          }
  
@@ -132,7 +132,7 @@
 +            if (!this.cubeMob.canAttack(target)) {
 +                return false;
 +            }
-+            return --this.growTiredTimer > 0 && this.cubeMob.canWander && new com.destroystokyo.paper.event.entity.SlimeTargetLivingEntityEvent((org.bukkit.entity.AbstractCubeMob) this.cubeMob.getBukkitEntity(), (org.bukkit.entity.LivingEntity) target.getBukkitEntity()).callEvent();
++            return --this.growTiredTimer > 0 && this.cubeMob.canWander && new com.destroystokyo.paper.event.entity.SlimeTargetLivingEntityEvent((org.bukkit.entity.AbstractCubeMob) this.cubeMob.getBukkitEntity(), target.getBukkitEntity()).callEvent();
 +            // Paper end - Slime pathfinder events
          }
  

@@ -69,10 +69,10 @@
          this.setRequiresPrecisePosition(this.horizontalCollision || this.verticalCollision);
 +        // Paper start - Option to prevent TNT from moving in water
 +        if (!this.isRemoved() && this.wasTouchingWater && this.level().paperConfig().fixes.preventTntFromMovingInWater) {
-+            this.markHurt();
++            this.syncVelocity = true;
 +            this.needsSync = true;
 +        }
-+        // Paper end
++        // Paper end - Option to prevent TNT from moving in water
      }
  
      private void explode() {

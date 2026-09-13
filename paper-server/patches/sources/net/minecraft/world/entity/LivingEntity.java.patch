@@ -18,7 +18,7 @@
  public abstract class LivingEntity extends Entity implements Attackable, WaypointTransmitter {
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final String TAG_ACTIVE_EFFECTS = "active_effects";
-@@ -283,11 +_,25 @@
+@@ -283,11 +_,24 @@
      protected final EntityEquipment equipment;
      private Waypoint.Icon locatorBarIcon = new Waypoint.Icon();
      public @Nullable Vec3 currentImpulseImpactPos;
@@ -29,7 +29,6 @@
 +    public boolean collides = true;
 +    public Set<UUID> collidableExemptions = new java.util.HashSet<>();
 +    public boolean bukkitPickUpLoot;
-+    public org.bukkit.craftbukkit.entity.CraftLivingEntity getBukkitLivingEntity() { return (org.bukkit.craftbukkit.entity.CraftLivingEntity) super.getBukkitEntity(); } // Paper
 +    public boolean silentDeath = true; // Paper - mark entity as dying silently for cancellable death event
 +    public net.kyori.adventure.util.TriState frictionState = net.kyori.adventure.util.TriState.NOT_SET; // Paper - Friction API
 +    public int invulnerableDuration = LivingEntity.DAMAGE_COOLDOWN_DURATION; // Paper - configurable invulnerable duration
@@ -49,13 +48,13 @@
  
                  double scale = Math.min(0.2F + power / 15.0, 2.5);
                  int particles = (int)(150.0 * scale);
-+                // CraftBukkit start - visibility api
++                // CraftBukkit start - visibility API
 +                if (this instanceof ServerPlayer) {
-+                    level.sendParticlesSource((ServerPlayer)this, new BlockParticleOption(ParticleTypes.BLOCK, onState), false, false, x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
++                    level.sendParticlesSource(this, new BlockParticleOption(ParticleTypes.BLOCK, onState), false, false, x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
 +                } else {
                  level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, onState), x, y, z, particles, 0.0, 0.0, 0.0, 0.15F);
 +                }
-+                // CraftBukkit end
++                // CraftBukkit end - visibility API
              }
          }
  
@@ -748,7 +747,7 @@
 +        }
 +
 +        final org.bukkit.inventory.EquipmentSlot handSlot = (usedHand != null) ? org.bukkit.craftbukkit.CraftEquipmentSlot.getHand(usedHand) : null;
-+        final EntityResurrectEvent event = new EntityResurrectEvent((org.bukkit.entity.LivingEntity) this.getBukkitEntity(), handSlot);
++        final EntityResurrectEvent event = new EntityResurrectEvent(this.getBukkitEntity(), handSlot);
 +        event.setCancelled(protectionItem == null);
 +        this.level().getCraftServer().getPluginManager().callEvent(event);
 +        if (event.isCancelled()) {
@@ -835,7 +834,7 @@
                      if (this.level().getBlockState(pos).isAir() && state.canSurvive(this.level(), pos)) {
 -                        this.level().setBlockAndUpdate(pos, state);
 -                        var6 = true;
-+                        var6 = CraftEventFactory.handleBlockFormEvent(this.level(), pos, state, net.minecraft.world.level.block.Block.UPDATE_ALL, this); // CraftBukkit - call EntityBlockFormEvent for Wither Rose
++                        var6 = CraftEventFactory.handleBlockFormEvent(this.level(), pos, state, Block.UPDATE_ALL, this); // CraftBukkit - call EntityBlockFormEvent for Wither Rose
                      }
                  }
  
@@ -914,7 +913,7 @@
              );
 +            // Paper start - knockback events
 +            Vec3 knockback = targetMovement.subtract(deltaMovement);
-+            io.papermc.paper.event.entity.EntityKnockbackEvent event = CraftEventFactory.callEntityKnockbackEvent((org.bukkit.craftbukkit.entity.CraftLivingEntity) this.getBukkitEntity(), attacker, attacker, eventCause, power, knockback);
++            io.papermc.paper.event.entity.EntityKnockbackEvent event = CraftEventFactory.callEntityKnockbackEvent(this.getBukkitEntity(), attacker, attacker, eventCause, power, knockback);
 +            if (event.isCancelled()) {
 +                return;
 +            }
@@ -1015,7 +1014,7 @@
 +        // Paper end - fix invulnerability reduction in EntityDamageEvent
 +
 +        com.google.common.base.Function<Double, Double> freezing = mod -> {
-+            if (damagesource.is(net.minecraft.tags.DamageTypeTags.IS_FREEZING) && LivingEntity.this.is(net.minecraft.tags.EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
++            if (damagesource.is(DamageTypeTags.IS_FREEZING) && LivingEntity.this.is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
 +                return -(mod - mod * 5.0F);
 +            }
 +            return -0.0;
@@ -1024,7 +1023,7 @@
 +        damage += freezingModifier;
 +
 +        com.google.common.base.Function<Double, Double> hardHat = mod -> {
-+            if (damagesource.is(net.minecraft.tags.DamageTypeTags.DAMAGES_HELMET) && !LivingEntity.this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
++            if (damagesource.is(DamageTypeTags.DAMAGES_HELMET) && !LivingEntity.this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
 +                return -(mod - mod * 0.75F);
 +            }
 +            return -0.0;
@@ -1046,7 +1045,7 @@
 +        damage += armorModifier;
 +
 +        com.google.common.base.Function<Double, Double> resistance = mod -> {
-+            if (!damagesource.is(net.minecraft.tags.DamageTypeTags.BYPASSES_EFFECTS) && LivingEntity.this.hasEffect(net.minecraft.world.effect.MobEffects.RESISTANCE) && !damagesource.is(net.minecraft.tags.DamageTypeTags.BYPASSES_RESISTANCE)) {
++            if (!damagesource.is(DamageTypeTags.BYPASSES_EFFECTS) && LivingEntity.this.hasEffect(MobEffects.RESISTANCE) && !damagesource.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
 +                int absorbValue = (LivingEntity.this.getEffect(net.minecraft.world.effect.MobEffects.RESISTANCE).getAmplifier() + 1) * 5;
 +                int absorb = 25 - absorbValue;
 +                float v = mod.floatValue() * (float) absorb;
@@ -1058,11 +1057,11 @@
 +        float resistanceModifier = resistance.apply((double) damage).floatValue();
 +        damage += resistanceModifier;
 +
-+        com.google.common.base.Function<Double, Double> magic = mod -> -(mod - net.minecraft.world.entity.LivingEntity.this.getDamageAfterMagicAbsorb(damagesource, mod.floatValue()));
++        com.google.common.base.Function<Double, Double> magic = mod -> -(mod - LivingEntity.this.getDamageAfterMagicAbsorb(damagesource, mod.floatValue()));
 +        float magicModifier = magic.apply((double) damage).floatValue();
 +        damage += magicModifier;
 +
-+        com.google.common.base.Function<Double, Double> absorption = mod -> -(Math.max(mod - Math.max(mod - net.minecraft.world.entity.LivingEntity.this.getAbsorptionAmount(), 0.0F), 0.0F));
++        com.google.common.base.Function<Double, Double> absorption = mod -> -(Math.max(mod - Math.max(mod - LivingEntity.this.getAbsorptionAmount(), 0.0F), 0.0F));
 +        float absorptionModifier = absorption.apply((double) damage).floatValue();
 +
 +        // Paper start - fix invulnerability reduction in EntityDamageEvent
@@ -1384,7 +1383,7 @@
                  }
              }
 +
-+            new io.papermc.paper.event.entity.EntityEquipmentChangedEvent(this.getBukkitLivingEntity(), equipmentChanges).callEvent(); // Paper - EntityEquipmentChangedEvent
++            new io.papermc.paper.event.entity.EntityEquipmentChangedEvent(this.getBukkitEntity(), equipmentChanges).callEvent(); // Paper - EntityEquipmentChangedEvent
          }
  
          return changedItems;
@@ -1401,7 +1400,7 @@
              if (!inWaterAndHasFluidHeight || this.onGround() && !(fluidHeight > fluidJumpThreshold)) {
                  if (!this.isInLava() || this.onGround() && this.isInShallowFluid(FluidTags.LAVA)) {
                      if ((this.onGround() || inWaterAndHasFluidHeight && fluidHeight <= fluidJumpThreshold) && this.noJumpDelay == 0) {
-+                        if (new com.destroystokyo.paper.event.entity.EntityJumpEvent(getBukkitLivingEntity()).callEvent()) { // Paper - Entity Jump API
++                        if (new com.destroystokyo.paper.event.entity.EntityJumpEvent(this.getBukkitEntity()).callEvent()) { // Paper - Entity Jump API
                          this.jumpFromGround();
                          this.noJumpDelay = 10;
 +                        } else { this.setJumping(false); } // Paper - Entity Jump API; setJumping(false) stops a potential loop
@@ -1426,7 +1425,7 @@
 +            if (this.xo != this.getX() || this.yo != this.getY() || this.zo != this.getZ() || this.yRotO != this.getYRot() || this.xRotO != this.getXRot()) {
 +                Location from = new Location(this.level().getWorld(), this.xo, this.yo, this.zo, this.yRotO, this.xRotO);
 +                Location to = new Location(this.level().getWorld(), this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
-+                io.papermc.paper.event.entity.EntityMoveEvent event = new io.papermc.paper.event.entity.EntityMoveEvent(this.getBukkitLivingEntity(), from, to.clone());
++                io.papermc.paper.event.entity.EntityMoveEvent event = new io.papermc.paper.event.entity.EntityMoveEvent(this.getBukkitEntity(), from, to.clone());
 +                if (!event.callEvent()) {
 +                    this.absSnapTo(from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch());
 +                } else if (!to.equals(event.getTo())) {
@@ -1506,8 +1505,8 @@
                  if (entity instanceof LivingEntity livingEntity) {
 +                    // Paper start - entity attempt spin attack event / hidden entities - skip hidden entities
 +                    if (!new io.papermc.paper.event.entity.EntityAttemptSpinAttackEvent(
-+                        getBukkitLivingEntity(),
-+                        livingEntity.getBukkitLivingEntity()
++                        this.getBukkitEntity(),
++                        livingEntity.getBukkitEntity()
 +                    ).callEvent()) {
 +                        ++skippedAttackedEntitiesCounter;
 +                        continue;
@@ -1576,13 +1575,13 @@
  
      @Override
      public boolean isPushable() {
-+    // Paper start - Climbing should not bypass cramming gamerule
++        // Paper start - Climbing should not bypass cramming gamerule
 +        return this.isCollidable(this.level().paperConfig().collisions.fixClimbingBypassingCrammingRule);
 +    }
 +
 +    @Override
 +    public boolean isCollidable(boolean ignoreClimbing) {
-+    // Paper end - Climbing should not bypass cramming gamerule
++        // Paper end - Climbing should not bypass cramming gamerule
          return (this.isAlwaysTicking() || !(this.level() instanceof ServerLevel level && !level.isPositionEntityTicking(this.blockPosition())))
              && this.isAlive()
              && !this.isSpectator()
@@ -1721,7 +1720,7 @@
          ItemStack itemInUsedHand = this.getItemInHand(this.getUsedItemHand());
          if (!this.useItem.isEmpty() && ItemStack.isSameItem(itemInUsedHand, this.useItem)) {
              this.useItem = itemInUsedHand;
-+            if (this instanceof ServerPlayer) new io.papermc.paper.event.player.PlayerStopUsingItemEvent((org.bukkit.entity.Player) getBukkitEntity(), useItem.asBukkitMirror(), getTicksUsingItem()).callEvent(); // Paper - Add PlayerStopUsingItemEvent
++            if (this instanceof ServerPlayer) new io.papermc.paper.event.player.PlayerStopUsingItemEvent((org.bukkit.entity.Player) getBukkitEntity(), CraftItemStack.asBukkitMirror(this.useItem), getTicksUsingItem()).callEvent(); // Paper - Add PlayerStopUsingItemEvent
              this.useItem.releaseUsing(this.level(), this, this.getUseItemRemainingTicks());
              if (this.useItem.useOnRelease()) {
                  this.updatingUsingItem();
@@ -1798,32 +1797,31 @@
      public boolean isSuppressingSlidingDownLadder() {
          return this.isShiftKeyDown();
      }
-@@ -3669,10 +_,30 @@
+@@ -3669,10 +_,29 @@
      }
  
      public boolean randomTeleport(final double xx, final double yy, final double zz, final boolean showParticles, final TagKey<Block> avoidanceTag) {
 -        return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag));
 +        // Paper start - teleport cause API
-+        return randomTeleport(xx, yy, zz, showParticles, avoidanceTag, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN).toBoolean();
++        return this.randomTeleport(xx, yy, zz, showParticles, avoidanceTag, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN).isSuccess();
 +    }
 +    public enum RandomTeleportResult {
 +        SUCCESS,
 +        FAILURE,
-+        EVENT_CANCELLED,
-+        ;
++        EVENT_CANCELLED;
 +
-+        public boolean toBoolean() {
++        public boolean isSuccess() {
 +            return this == SUCCESS;
 +        }
 +    }
 +    public RandomTeleportResult randomTeleport(final double xx, final double yy, final double zz, final boolean showParticles, final TagKey<Block> avoidanceTag, final org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
++        return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag), cause);
 +        // Paper end - teleport cause API
-+        return this.randomTeleport(xx, yy, zz, showParticles, state -> state.is(avoidanceTag), cause); // Paper - teleport cause API
      }
  
      public boolean randomTeleport(final double xx, final double yy, final double zz, final boolean showParticles, final Predicate<BlockState> isInvalidPosition) {
 +        // Paper start - teleport cause API
-+        return this.randomTeleport(xx, yy, zz, showParticles, isInvalidPosition, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN).toBoolean();
++        return this.randomTeleport(xx, yy, zz, showParticles, isInvalidPosition, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN).isSuccess();
 +    }
 +    public RandomTeleportResult randomTeleport(final double xx, final double yy, final double zz, final boolean showParticles, final Predicate<BlockState> isInvalidPosition, final org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +        // Paper end - teleport cause API
@@ -1873,19 +1871,19 @@
              if (this.canRandomlyTeleportTo(xx, y, zz)) {
 -                this.teleportTo(xx, y, zz);
 +                // Paper start - teleport event
-+                if (!(this instanceof ServerPlayer)) {
-+                    org.bukkit.event.entity.EntityTeleportEvent teleport = new org.bukkit.event.entity.EntityTeleportEvent(this.getBukkitEntity(), new Location(this.level().getWorld(), xo, yo, zo), new Location(this.level().getWorld(), xx, y, zz));
-+                    this.level().getCraftServer().getPluginManager().callEvent(teleport);
-+                    if (!teleport.isCancelled() && teleport.getTo() != null) { // Paper
-+                        Location to = teleport.getTo();
-+                        this.teleportTo(to.getX(), to.getY(), to.getZ());
-+                    } else {
-+                        return RandomTeleportResult.EVENT_CANCELLED;
++                if (this instanceof net.minecraft.server.level.ServerPlayer player) {
++                    // player teleport event is called in the underlining code
++                    if (!player.connection.teleport(xx, y, zz, this.getYRot(), this.getXRot(), cause)) {
++                        return net.minecraft.world.entity.LivingEntity.RandomTeleportResult.EVENT_CANCELLED;
 +                    }
 +                } else {
-+                    // player teleport event is called in the underlining code
-+                    if (!((ServerPlayer) this).connection.teleport(xx, y, zz, this.getYRot(), this.getXRot(), cause)) {
-+                        return RandomTeleportResult.EVENT_CANCELLED;
++                    org.bukkit.event.entity.EntityTeleportEvent teleport = new org.bukkit.event.entity.EntityTeleportEvent(this.getBukkitEntity(), org.bukkit.craftbukkit.util.CraftLocation.toBukkit(this.oldPosition(), this.level()), new org.bukkit.Location(this.level().getWorld(), xx, y, zz));
++                    this.level().getCraftServer().getPluginManager().callEvent(teleport);
++                    if (!teleport.isCancelled() && teleport.getTo() != null) { // Paper
++                        org.bukkit.Location to = teleport.getTo();
++                        this.teleportTo(to.getX(), to.getY(), to.getZ());
++                    } else {
++                        return net.minecraft.world.entity.LivingEntity.RandomTeleportResult.EVENT_CANCELLED;
 +                    }
 +                }
 +                // Paper end - teleport event
@@ -1908,3 +1906,17 @@
          }
      }
  
+@@ -4099,6 +_,13 @@
+     public DamageSource createDamageSource() {
+         return this.damageSources().mobAttack(this);
+     }
++
++    // Paper start
++    @Override
++    public org.bukkit.craftbukkit.entity.CraftLivingEntity getBukkitEntity() {
++        return (org.bukkit.craftbukkit.entity.CraftLivingEntity) super.getBukkitEntity();
++    }
++    // Paper end
+ 
+     public record Fallsounds(SoundEvent small, SoundEvent big) {
+     }

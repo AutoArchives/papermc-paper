@@ -9,7 +9,7 @@
 +            e -> {
 +                int level = enchantmentLevel;
 +                if (user instanceof LivingEntity livingEntity) {
-+                    final io.papermc.paper.event.entity.EntityLungeEvent event = new io.papermc.paper.event.entity.EntityLungeEvent(livingEntity.getBukkitLivingEntity(), level);
++                    final io.papermc.paper.event.entity.EntityLungeEvent event = new io.papermc.paper.event.entity.EntityLungeEvent(livingEntity.getBukkitEntity(), level);
 +                    if (!event.callEvent()) {
 +                        return;
 +                    }

@@ -97,10 +97,10 @@
                  } else if (isSwallowableItem(heldItem)) {
 -                    boolean itWorked = this.equipItem(heldItem);
 +                    // Paper start - SulfurCubeSwallowItemEvent
-+                    org.bukkit.inventory.ItemStack craftSwallowedItem = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(this.getItemBySlot(EquipmentSlot.BODY));
-+                    org.bukkit.inventory.ItemStack craftHeldItem = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(heldItem);
++                    org.bukkit.inventory.ItemStack craftSwallowedItem = org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(this.getItemBySlot(EquipmentSlot.BODY));
++                    org.bukkit.inventory.ItemStack craftHeldItem = org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(heldItem);
 +                    io.papermc.paper.event.entity.SulfurCubeSwallowItemEvent event = new io.papermc.paper.event.entity.SulfurCubeSwallowItemEvent(
-+                        (org.bukkit.entity.SulfurCube) this.getBukkitLivingEntity(), (org.bukkit.entity.Player) player.getBukkitLivingEntity(), craftSwallowedItem, craftHeldItem
++                        (org.bukkit.entity.SulfurCube) this.getBukkitEntity(), (org.bukkit.entity.Player) player.getBukkitEntity(), craftSwallowedItem, craftHeldItem
 +                    );
 +                    if (!event.callEvent()) {
 +                        if (player instanceof final ServerPlayer serverPlayer) serverPlayer.containerMenu.forceHeldSlot(hand);
@@ -182,7 +182,7 @@
 +                deltaMovement.x - horizontalKnockback.x, deltaMovement.y + verticalPower * 1.2, deltaMovement.z - horizontalKnockback.z
 +            );
 +            Vec3 knockback = targetMovement.subtract(deltaMovement);
-+            io.papermc.paper.event.entity.EntityKnockbackEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityKnockbackEvent((org.bukkit.craftbukkit.entity.CraftLivingEntity) this.getBukkitEntity(), attacker, attacker, eventCause, power, knockback);
++            io.papermc.paper.event.entity.EntityKnockbackEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityKnockbackEvent(this.getBukkitEntity(), attacker, attacker, eventCause, power, knockback);
 +            if (!event.isCancelled()) {
 +                this.needsSync = true;
 +                this.setDeltaMovement(deltaMovement.add(event.getKnockback().getX(), event.getKnockback().getY(), event.getKnockback().getZ()));

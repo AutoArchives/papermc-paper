@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/ConversionTracker.java
 +++ b/net/minecraft/world/entity/ConversionTracker.java
-@@ -25,6 +_,20 @@
+@@ -25,6 +_,16 @@
      private final @Nullable BiConsumer<M, ServerLevel> postConversionStep;
      public int afflictionTime = 0;
      public int conversionTime;
@@ -8,13 +8,9 @@
 +    private org.bukkit.event.entity.EntityTransformEvent.TransformReason transformReason = org.bukkit.event.entity.EntityTransformEvent.TransformReason.UNKNOWN;
 +    private org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason = org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT;
 +
-+    public ConversionTracker<M> withTransformReason(final org.bukkit.event.entity.EntityTransformEvent.TransformReason transformReason) {
-+        this.transformReason = transformReason;
-+        return this;
-+    }
-+
-+    public ConversionTracker<M> withSpawnReason(final org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
++    public ConversionTracker<M> setEventReasons(final org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason, final org.bukkit.event.entity.EntityTransformEvent.TransformReason transformReason) {
 +        this.spawnReason = spawnReason;
++        this.transformReason = transformReason;
 +        return this;
 +    }
 +    // Paper end - add spawn and transform reasons

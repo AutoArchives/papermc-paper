@@ -85,8 +85,8 @@
          }
  
 +        // CraftBukkit start
-+        org.bukkit.inventory.ItemStack armorStandItem = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemStack);
-+        org.bukkit.inventory.ItemStack playerHeldItem = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(playerItemStack);
++        org.bukkit.inventory.ItemStack armorStandItem = org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(itemStack);
++        org.bukkit.inventory.ItemStack playerHeldItem = org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(playerItemStack);
 +
 +        org.bukkit.entity.Player player1 = (org.bukkit.entity.Player) player.getBukkitEntity();
 +        org.bukkit.entity.ArmorStand self = (org.bukkit.entity.ArmorStand) this.getBukkitEntity();
@@ -272,7 +272,7 @@
 +            return;
 +        }
 +        final Entity attributedTo = source == null ? null : source.getEntity();
-+    // Paper end - pass damage source for event
++        // Paper end - pass damage source for event
          this.remove(Entity.RemovalReason.KILLED);
          this.gameEvent(GameEvent.ENTITY_DIE, attributedTo != null ? attributedTo : this);
      }

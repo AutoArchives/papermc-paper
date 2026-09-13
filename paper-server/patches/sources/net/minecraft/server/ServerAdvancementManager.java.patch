@@ -1,13 +1,12 @@
 --- a/net/minecraft/server/ServerAdvancementManager.java
 +++ b/net/minecraft/server/ServerAdvancementManager.java
-@@ -25,12 +_,20 @@
+@@ -25,12 +_,19 @@
          HolderLookup.RegistryLookup<Advancement> advancements = registries.lookupOrThrow(Registries.ADVANCEMENT);
          Builder<Identifier, AdvancementHolder> builder = ImmutableMap.builder();
          advancements.listElements().forEach(advancement -> {
 +            // Spigot start
-+            String id = advancement.key().identifier().toString();
-+            String namespace = advancement.key().identifier().getNamespace();
-+            if (org.spigotmc.SpigotConfig.disabledAdvancements != null && (org.spigotmc.SpigotConfig.disabledAdvancements.contains("*") || org.spigotmc.SpigotConfig.disabledAdvancements.contains(id) || org.spigotmc.SpigotConfig.disabledAdvancements.contains(namespace))) {
++            Identifier id = advancement.key().identifier();
++            if (org.spigotmc.SpigotConfig.disabledAdvancements != null && (org.spigotmc.SpigotConfig.disabledAdvancements.contains("*") || org.spigotmc.SpigotConfig.disabledAdvancements.contains(id.toString()) || org.spigotmc.SpigotConfig.disabledAdvancements.contains(id.getNamespace()))) {
 +                return;
 +            }
 +            // Spigot end

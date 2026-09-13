@@ -318,11 +318,11 @@
 +            org.spigotmc.AsyncCatcher.catchOp("player tracker update"); // Spigot
              if (player != this.entity) {
 -                Vec3 deltaToPlayer = player.position().subtract(this.entity.position());
-+                // Paper start - remove allocation of Vec3D here
++                // Paper start - remove allocation of Vec3 here
 +                // Vec3 deltaToPlayer = player.position().subtract(this.entity.position());
 +                double deltaToPlayerX = player.getX() - this.entity.getX();
 +                double deltaToPlayerZ = player.getZ() - this.entity.getZ();
-+                // Paper end - remove allocation of Vec3D here
++                // Paper end - remove allocation of Vec3 here
                  int playerViewDistance = ChunkMap.this.getPlayerViewDistance(player);
                  double visibleRange = Math.min(this.getEffectiveRange(), playerViewDistance * 16);
 -                double distanceSquared = deltaToPlayer.x * deltaToPlayer.x + deltaToPlayer.z * deltaToPlayer.z;

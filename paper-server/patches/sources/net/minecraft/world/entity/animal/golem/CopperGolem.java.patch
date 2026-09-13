@@ -42,8 +42,8 @@
 -        level.setBlockAndUpdate(
 -            pos,
 +        // Paper start - call EntityChangeBlockEvent
-+        //level.setBlockAndUpdate(
-+        //    pos,
++        // level.setBlockAndUpdate(
++        //     pos,
 +        BlockState newState =
              Blocks.COPPER_GOLEM_STATUE
                  .weathering()
@@ -55,7 +55,7 @@
 -                .setValue(CopperGolemStatueBlock.FACING, Direction.fromYRot(this.getYRot()))
 -        );
 +                .setValue(CopperGolemStatueBlock.FACING, Direction.fromYRot(this.getYRot()));
-+        //);
++        // );
 +        if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this, pos, newState)) {
 +            return;
 +        }

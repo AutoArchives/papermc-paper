@@ -68,7 +68,7 @@
 +                this.targetCooldownLength,
 +                this.requiredPlayerRange
 +            );
-+            }
++        }
 +        // Paper end - trial spawner API - withers
      }
  

@@ -387,7 +387,7 @@
      }
  
      @Override
-@@ -888,15 +_,36 @@
+@@ -888,15 +_,37 @@
      }
  
      private void updateScoreForCriteria(final ObjectiveCriteria criteria, final int value) {
@@ -413,7 +413,7 @@
 +            return false;
 +        }
 +
-+        final org.bukkit.inventory.ItemStack bukkitStack = item.getBukkitStack();
++        final org.bukkit.inventory.ItemStack bukkitStack = org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitMirror(item);
 +        final java.util.Iterator<org.bukkit.inventory.ItemStack> iterator = itemsToKeep.iterator();
 +        while (iterator.hasNext()) {
 +            final org.bukkit.inventory.ItemStack itemStack = iterator.next();
@@ -426,6 +426,7 @@
 +        return false;
 +    }
 +    // Paper end - PlayerDeathEvent#getItemsToKeep
++
 +    // Paper start - Expand PlayerDeathEvent API
 +    private void sendClientboundPlayerCombatKillPacket(boolean displayMessage, Component deathMessage) {
 +        if (displayMessage && deathMessage != CommonComponents.EMPTY) {
@@ -867,11 +868,10 @@
                  );
              }
  
-@@ -1266,7 +_,35 @@
-                     return Either.left(Player.BedSleepingProblem.NOT_SAFE);
+@@ -1267,6 +_,35 @@
                  }
              }
--
+ 
 +            // CraftBukkit start
 +            return Either.right(Unit.INSTANCE);
 +        } else {
@@ -881,15 +881,14 @@
 +
 +    @Override
 +    public Either<Player.BedSleepingProblem, Unit> startSleepInBed(
-+        final AbstractBedBlock bedBlock, final BlockState bedBlockState, final BedRule rule, final BlockPos pos,
-+        final boolean force // CraftBukkit - add force boolean
++        final AbstractBedBlock bedBlock, final BlockState bedBlockState, final BedRule rule, final BlockPos pos, final boolean force // CraftBukkit - add force boolean
 +    ) {
 +        Direction direction = bedBlockState.getValue(HorizontalDirectionalBlock.FACING);
 +        Either<net.minecraft.world.entity.player.Player.BedSleepingProblem, Unit> bedResult = this.getBedResult(pos, direction, rule);
 +        boolean canSetSpawn = rule.canSetSpawn(this.level());
 +
 +        if (bedResult.left().orElse(null) == net.minecraft.world.entity.player.Player.BedSleepingProblem.OTHER_PROBLEM) {
-+            return Either.left(Player.BedSleepingProblem.OTHER_PROBLEM); // return immediately if the result is not bypassable by plugins
++            return bedResult; // return immediately if the result is not bypassable by plugins
 +        }
 +
 +        if (force) {
@@ -901,6 +900,7 @@
 +            return bedResult;
 +        }
 +        {
++            // CraftBukkit end
              Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(bedBlock, bedBlockState, rule, pos).ifRight(unit -> {
                  this.awardStat(bedBlock.getSleptInBedStatType());
                  if (canSetSpawn) {
@@ -1496,9 +1496,9 @@
          }
  
 -        this.drop(removed, true, Prediction.PREDICTED);
-+        boolean ret = this.drop(removed, true, Prediction.PREDICTED) != null; // Paper - add back success return
++        boolean result = this.drop(removed, true, Prediction.PREDICTED) != null; // Paper - add back success return
          this.resetAttackStrengthTicker();
-+        return ret; // Paper - return, keep order
++        return result; // Paper - return, keep order
      }
  
      @Override

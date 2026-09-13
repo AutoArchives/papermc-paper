@@ -1,15 +1,24 @@
 --- a/net/minecraft/world/level/levelgen/WorldGenerationContext.java
 +++ b/net/minecraft/world/level/levelgen/WorldGenerationContext.java
-@@ -17,6 +_,12 @@
+@@ -9,6 +_,7 @@
+     private final int minY;
+     private final int height;
+     private final int seaLevel;
++    private final net.minecraft.world.level.@org.jspecify.annotations.Nullable Level level; // Paper - Flat bedrock generator settings
+ 
+     public static WorldGenerationContext of(final LevelAccessor level) {
+         return level instanceof WorldGenLevel worldGenLevel
+@@ -17,6 +_,13 @@
      }
  
      public WorldGenerationContext(final ChunkGenerator generator, final LevelHeightAccessor heightAccessor) {
-+    // Paper start - Flat bedrock generator settings
++        // Paper start - Flat bedrock generator settings
 +        this(generator, heightAccessor, null);
 +    }
-+    public WorldGenerationContext(final ChunkGenerator generator, final LevelHeightAccessor heightAccessor, net.minecraft.world.level.@org.jspecify.annotations.Nullable Level level) {
++
++    public WorldGenerationContext(final ChunkGenerator generator, final LevelHeightAccessor heightAccessor, final net.minecraft.world.level.@org.jspecify.annotations.Nullable Level level) {
 +        this.level = level;
-+    // Paper end - Flat bedrock generator settings
++        // Paper end - Flat bedrock generator settings
          this.minY = Math.max(heightAccessor.getMinY(), generator.getMinY());
          this.height = Math.min(heightAccessor.getHeight(), generator.getGenDepth());
          this.seaLevel = generator.getSeaLevel();
@@ -21,13 +30,12 @@
      }
  
      public int getMinGenY() {
-@@ -39,4 +_,14 @@
+@@ -39,4 +_,13 @@
      public int seaLevel() {
          return this.seaLevel;
      }
 +
 +    // Paper start - Flat bedrock generator settings
-+    final net.minecraft.world.level.@org.jspecify.annotations.Nullable Level level;
 +    public net.minecraft.world.level.Level level() {
 +        if (this.level == null) {
 +            throw new NullPointerException("WorldGenerationContext was initialized without a Level, but WorldGenerationContext#level was called");
