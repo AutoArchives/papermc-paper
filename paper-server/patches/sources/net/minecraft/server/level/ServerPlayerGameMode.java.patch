@@ -91,7 +91,7 @@
          final BlockPos pos, final ServerboundPlayerActionPacket.Action action, final Direction direction, final int maxY, final int sequence
      ) {
          if (!this.player.isWithinBlockInteractionRange(pos, 1.0)) {
-+            if (true) return; // Paper - Don't allow digging into unloaded chunks; Don't notify if unreasonably far away // TODO - snapshot - revisit now that there is logic involved here
++            if (this.player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) >= Level.SHORT_PARTICLE_CLIP_RANGE * Level.SHORT_PARTICLE_CLIP_RANGE) return; // Paper - Don't allow digging into unloaded chunks; Don't notify if unreasonably far away
              if (this.isDestroyingBlock && action == ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK) {
                  this.abortDestroyBlock(pos, sequence);
              }
