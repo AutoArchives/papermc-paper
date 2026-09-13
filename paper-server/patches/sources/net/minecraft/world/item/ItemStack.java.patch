@@ -28,7 +28,7 @@
                      ItemStack.CODEC.encodeStart(ops, itemStack).getOrThrow(DecoderException::new);
                  }
  
-@@ -369,12 +_,142 @@
+@@ -369,12 +_,141 @@
          } else {
              ItemStack stackBeforeUse = this.copy();
              Item usedItem = this.getItem();
@@ -149,17 +149,16 @@
 +                        }
 +                    }
 +
-+                    // TODO - snapshot - check this logic later
-+                    // SPIGOT-4678
-+                    if (usedItem.components().has(DataComponents.SIGN_TEXT_FRONT) && placedPos != null && !success.paperSuccessContext().updatedBlockEntity()) {
-+                        if (level.getBlockEntity(placedPos) instanceof net.minecraft.world.level.block.entity.SignBlockEntity signEntity) {
-+                            if (level.getBlockState(placedPos).getBlock() instanceof net.minecraft.world.level.block.SignBlock sign) {
-+                                sign.openTextEdit(player, signEntity, net.minecraft.world.level.block.entity.SignTextSlot.FRONT, io.papermc.paper.event.player.PlayerOpenSignEvent.Cause.PLACE); // CraftBukkit // Paper - Add PlayerOpenSignEvent
-+                            }
++                    if (placedPos != null) {
++                        if (level.getBlockState(placedPos).getBlock() instanceof net.minecraft.world.level.block.SignBlock sign
++                            && level.getBlockEntity(placedPos) instanceof net.minecraft.world.level.block.entity.SignBlockEntity signEntity
++                            && !signEntity.isWaxed()
++                            && signEntity.getText(net.minecraft.world.level.block.entity.SignTextSlot.FRONT).hasEditableText(player.isTextFilteringEnabled())
++                        ) {
++                            sign.openTextEdit(player, signEntity, net.minecraft.world.level.block.entity.SignTextSlot.FRONT, io.papermc.paper.event.player.PlayerOpenSignEvent.Cause.PLACE);
 +                        }
 +                    }
 +
-+                    // SPIGOT-1288 - play sound stripped from BlockItem
 +                    if (usedItem instanceof BlockItem blockItem && placedPos != null) {
 +                        BlockState placedState = level.getBlockState(placedPos);
 +                        net.minecraft.world.level.block.SoundType soundType = placedState.getSoundType();

@@ -2372,9 +2372,9 @@
 -        List<String> lines = packet.lines().stream().map(ChatFormatting::stripFormatting).collect(Collectors.toList());
 +        // Paper start - limit client sign length
 +        final java.util.function.UnaryOperator<String> lineLimiter = line -> {
-+            if (line.length() - MAX_SIGN_LINE_LENGTH <= 0) return line;
-+            final int offset = line.codePoints().limit(MAX_SIGN_LINE_LENGTH).map(Character::charCount).sum();
-+            if (offset < line.length()) return line.substring(0, offset);
++            if (MAX_SIGN_LINE_LENGTH <= 0) return line;
++            final int newLineLength = line.codePoints().limit(MAX_SIGN_LINE_LENGTH).map(Character::charCount).sum();
++            if (newLineLength < line.length()) return line.substring(0, newLineLength);
 +            return line;
 +        };
 +        List<String> lines = packet.lines().stream().map(lineLimiter).map(ChatFormatting::stripFormatting).collect(Collectors.toList());
