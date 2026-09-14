@@ -868,10 +868,11 @@
                  );
              }
  
-@@ -1267,6 +_,35 @@
+@@ -1267,7 +_,36 @@
                  }
              }
  
+-            Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(bedBlock, bedBlockState, rule, pos).ifRight(unit -> {
 +            // CraftBukkit start
 +            return Either.right(Unit.INSTANCE);
 +        } else {
@@ -900,10 +901,11 @@
 +            return bedResult;
 +        }
 +        {
-+            // CraftBukkit end
-             Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(bedBlock, bedBlockState, rule, pos).ifRight(unit -> {
++            Either<Player.BedSleepingProblem, Unit> result = super.startSleepInBed(bedBlock, bedBlockState, rule, pos, force).ifRight(unit -> {
++                // CraftBukkit end
                  this.awardStat(bedBlock.getSleptInBedStatType());
                  if (canSetSpawn) {
+                     CriteriaTriggers.SLEPT_IN_BED.trigger(this);
 @@ -1279,8 +_,6 @@
  
              this.level().updateSleepingPlayerList();

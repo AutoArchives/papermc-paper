@@ -1388,10 +1388,10 @@
 +            pluginManager.callEvent(entityCombustEvent);
 +            if (!entityCombustEvent.isCancelled()) {
 +                this.igniteForSeconds(entityCombustEvent.getDuration(), false);
-+            // Paper start - fix EntityCombustEvent cancellation
++                // Paper start - fix EntityCombustEvent cancellation
 +            } else {
 +                this.setRemainingFireTicks(this.remainingFireTicks - 1);
-+            // Paper end - fix EntityCombustEvent cancellation
++                // Paper end - fix EntityCombustEvent cancellation
 +            }
 +            // CraftBukkit end
 +        }
