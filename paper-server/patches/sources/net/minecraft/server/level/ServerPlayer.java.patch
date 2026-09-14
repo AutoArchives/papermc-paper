@@ -896,7 +896,7 @@
 +            bedResult = Either.right(Unit.INSTANCE);
 +        }
 +
-+        bedResult = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerBedEnterEvent(this, pos, bedResult);
++        bedResult = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerBedEnterEvent(this, pos, rule, bedResult);
 +        if (bedResult.left().isPresent()) {
 +            return bedResult;
 +        }

@@ -29,7 +29,7 @@
                          player.sendOverlayMessage(problem.message());
                      }
 +                    if (problem != null) {
-+                        io.papermc.paper.event.player.PlayerBedFailEnterEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerBedFailEnterEvent(player, finalPos, problem);
++                        io.papermc.paper.event.player.PlayerBedFailEnterEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerBedFailEnterEvent(player, finalPos, bedRule, problem);
 +                        if (event.isCancelled()) {
 +                            return;
 +                        }

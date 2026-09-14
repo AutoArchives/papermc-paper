@@ -2555,10 +2555,10 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
      * @return The spawned {@link FallingBlock} instance
      * @throws IllegalArgumentException if {@link Location} or {@link
      *     BlockData} are null
-     * @deprecated Use {@link #spawn(Location, Class, Consumer)} (or a variation thereof) in combination with {@link FallingBlock#setBlockData(BlockData)}
+     * @apiNote Use {@link #spawn(Location, Class, Consumer)} (or a variation thereof) in combination with {@link FallingBlock#setBlockData(BlockData)}
      */
     @NotNull
-    @org.jetbrains.annotations.ApiStatus.Obsolete(since = "1.20.2") // Paper
+    @ApiStatus.Obsolete(since = "1.20.2")
     public FallingBlock spawnFallingBlock(@NotNull Location location, @NotNull BlockData data) throws IllegalArgumentException;
 
     /**
@@ -2799,12 +2799,13 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
 
     /**
      * Gets if beds work in this world.
+     * This doesn't check for straw beds.
      * <p>
      * A non-working bed can blow up when trying to sleep, but that may
      * not always be the case.
      *
      * @return true if beds work in this world
-     * @deprecated due to 1.21.11 beds changes, a boolean no longer
+     * @apiNote due to 1.21.11 beds changes, a boolean no longer
      * represents if they work. There is no replacement API yet
      */
     @ApiStatus.Obsolete(since = "1.21.11")
@@ -4720,7 +4721,7 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
          * @return dimension ID
          * @apiNote Internal Use Only
          */
-        @org.jetbrains.annotations.ApiStatus.Internal // Paper
+        @ApiStatus.Internal
         public int getId() {
             return id;
         }
@@ -4732,7 +4733,7 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
          * @return The environment
          * @apiNote Internal Use Only
          */
-        @org.jetbrains.annotations.ApiStatus.Internal // Paper
+        @ApiStatus.Internal
         @Nullable
         public static Environment getEnvironment(int id) {
             return lookup.get(id);

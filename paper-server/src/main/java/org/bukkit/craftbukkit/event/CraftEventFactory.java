@@ -42,7 +42,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.LockCode;
-import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.world.attribute.BedRule;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -306,7 +306,8 @@ public class CraftEventFactory {
     }
 
     public static com.mojang.datafixers.util.Pair<PlayerBedFailEnterEvent.FailReason, io.papermc.paper.block.bed.BedEnterAction> asFailReason(
-        final net.minecraft.world.entity.player.Player player, final net.minecraft.world.attribute.BedRule bedRule, final net.minecraft.world.entity.player.Player.BedSleepingProblem sleepingProblem) {
+        final net.minecraft.world.entity.player.Player player, final net.minecraft.world.attribute.BedRule bedRule, final net.minecraft.world.entity.player.Player.BedSleepingProblem sleepingProblem
+    ) {
         PlayerBedFailEnterEvent.FailReason failReason = null;
         io.papermc.paper.block.bed.BedEnterProblem enterProblem = null;
         Component errorMessage = sleepingProblem.message();
@@ -365,8 +366,8 @@ public class CraftEventFactory {
     }
 
     public static PlayerBedFailEnterEvent callPlayerBedFailEnterEvent(
-        net.minecraft.world.entity.player.Player player, BlockPos bed, net.minecraft.world.entity.player.Player.BedSleepingProblem bedSleepingProblem) {
-        net.minecraft.world.attribute.BedRule bedRule = player.level().environmentAttributes().getDimensionValue(EnvironmentAttributes.BED_RULE);
+        net.minecraft.world.entity.player.Player player, BlockPos bed, BedRule bedRule, net.minecraft.world.entity.player.Player.BedSleepingProblem bedSleepingProblem
+    ) {
         com.mojang.datafixers.util.Pair<PlayerBedFailEnterEvent.FailReason, io.papermc.paper.block.bed.BedEnterAction> actionPair = asFailReason(player, bedRule, bedSleepingProblem);
         final var event = new PlayerBedFailEnterEvent(
             (org.bukkit.entity.Player) player.getBukkitEntity(),
@@ -380,8 +381,8 @@ public class CraftEventFactory {
     }
 
     public static Either<net.minecraft.world.entity.player.Player.BedSleepingProblem, Unit> callPlayerBedEnterEvent(
-        net.minecraft.world.entity.player.Player player, BlockPos bed, Either<net.minecraft.world.entity.player.Player.BedSleepingProblem, Unit> nmsBedResult) {
-        final net.minecraft.world.attribute.BedRule bedRule = player.level().environmentAttributes().getDimensionValue(EnvironmentAttributes.BED_RULE);
+        net.minecraft.world.entity.player.Player player, BlockPos bed, BedRule bedRule, Either<net.minecraft.world.entity.player.Player.BedSleepingProblem, Unit> nmsBedResult
+    ) {
         com.mojang.datafixers.util.Pair<BedEnterResult, io.papermc.paper.block.bed.BedEnterActionImpl> bedEnterResult = nmsBedResult.mapBoth(sleepingProblem -> {
             BedEnterResult enterResult = null;
             io.papermc.paper.block.bed.BedEnterProblem enterProblem = null;
