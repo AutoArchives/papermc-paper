@@ -382,7 +382,7 @@
          this.player.getRecipeBook().setBookSetting(packet.getBookType(), packet.isOpen(), packet.isFiltering());
      }
  
-@@ -610,8 +_,68 @@
+@@ -610,8 +_,82 @@
          }
      }
  
@@ -426,6 +426,20 @@
 +
 +            this.sendServerSuggestions(packet); // This method will schedule work onto the main thread.
 +        } else if (!completions.isEmpty()) {
++            // Handle non-recoverable exceptions
++            com.mojang.brigadier.StringReader reader = new com.mojang.brigadier.StringReader(packet.command());
++            if (reader.canRead() && reader.peek() == '/') {
++                reader.skip();
++            }
++
++            CommandDispatcher<CommandSourceStack> dispatcher = server.getCommands().getDispatcher();
++            ParseResults<CommandSourceStack> parse = dispatcher.parse(reader, this.player.createCommandSourceStack());
++            if (!parse.getExceptions().isEmpty()
++                && parse.getExceptions().values().stream().anyMatch(e -> e instanceof io.papermc.paper.brigadier.TagParseCommandSyntaxException)) {
++                this.player.connection.disconnect(Component.translatable("disconnect.spam"), org.bukkit.event.player.PlayerKickEvent.Cause.SPAM);
++                return;
++            }
++
 +            final com.mojang.brigadier.suggestion.SuggestionsBuilder builder0 = new com.mojang.brigadier.suggestion.SuggestionsBuilder(packet.command(), packet.command().length());
 +            final com.mojang.brigadier.suggestion.SuggestionsBuilder builder = builder0.createOffset(builder0.getInput().lastIndexOf(' ') + 1);
 +            for (final com.destroystokyo.paper.event.server.AsyncTabCompleteEvent.Completion completion : completions) {
