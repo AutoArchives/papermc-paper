@@ -169,11 +169,11 @@
 +        return true; // Paper - make burn return a boolean again
      }
  
-     public int getBurnDuration(final ServerLevel level, final ItemStack fuelItem) {
+     protected int getBurnDuration(final ServerLevel level, final ItemStack fuelItem) {
 @@ -274,7 +_,7 @@
      }
  
-     public float getSpeedMultiplier(final ServerLevel level, final ItemStack fuelItem) {
+     protected float getSpeedMultiplier(final ServerLevel level, final ItemStack fuelItem) {
 -        return ResolvableFloat.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level), 1.0F);
 +        return ResolvableFloat.getFromItem(fuelItem, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, this.getLootContext(level), 1.0F) / (float) this.cookSpeedMultiplier; // Paper - cook speed multiplier API
      }
