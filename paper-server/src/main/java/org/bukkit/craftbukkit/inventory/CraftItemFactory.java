@@ -195,8 +195,8 @@ public final class CraftItemFactory implements ItemFactory {
         Preconditions.checkArgument(itemStack != null, "ItemStack must not be null");
         Preconditions.checkArgument(!itemStack.getType().isAir(), "ItemStack must not be air");
         RegistryAccess registry = CraftRegistry.getMinecraftRegistry();
-        Optional<HolderSet.Named<Enchantment>> optional = (allowTreasures) ? Optional.empty() : registry.lookupOrThrow(Registries.ENCHANTMENT).get(EnchantmentTags.IN_ENCHANTING_TABLE);
-        return CraftItemStack.asBukkitMirror(EnchantmentHelper.enchantItem(source, CraftItemStack.asNMSCopy(itemStack), level, registry, optional));
+        Optional<HolderSet.Named<Enchantment>> tag = allowTreasures ? Optional.empty() : registry.lookupOrThrow(Registries.ENCHANTMENT).get(EnchantmentTags.IN_ENCHANTING_TABLE);
+        return CraftItemStack.asBukkitMirror(EnchantmentHelper.enchantItem(source, CraftItemStack.asNMSCopy(itemStack), level, registry, tag));
     }
 
     @Override

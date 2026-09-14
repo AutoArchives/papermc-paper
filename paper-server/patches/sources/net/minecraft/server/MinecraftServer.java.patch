@@ -1216,7 +1216,7 @@
 -        LOGGER.info("System chat: {}", message.getString());
 +        // Paper start - Log messages with colors
 +        LOGGER.info(io.papermc.paper.adventure.PaperAdventure.ANSI_SERIALIZER.serialize(
-+            net.kyori.adventure.text.Component.text().content("System Chat: ")
++            net.kyori.adventure.text.Component.text().content("System chat: ")
 +                .append(io.papermc.paper.adventure.PaperAdventure.asAdventure(message)).build()
 +        ));
 +        // Paper end - Log messages with colors

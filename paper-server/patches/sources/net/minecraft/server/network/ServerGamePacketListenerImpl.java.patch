@@ -653,7 +653,7 @@
          }
      }
  
-@@ -1076,7 +_,7 @@
+@@ -1076,18 +_,18 @@
      public void handleMovePlayer(final ServerboundMovePlayerPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
          if (containsInvalidValues(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0), packet.getYRot(0.0F), packet.getXRot(0.0F))) {
@@ -662,7 +662,11 @@
          } else {
              if (packet.hasPosition()) {
                  if (this.receivedPositionThisTick) {
-@@ -1087,7 +_,7 @@
+-                    this.disconnect(Component.translatable("multiplayer.disconnect.invalid_player_movement"));
++                    this.disconnect(Component.translatable("multiplayer.disconnect.invalid_player_movement"), org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT); // Paper - kick event cause
+                     return;
+                 }
+ 
                  this.receivedPositionThisTick = true;
              }
  
@@ -2373,8 +2377,8 @@
 +        // Paper start - limit client sign length
 +        final java.util.function.UnaryOperator<String> lineLimiter = line -> {
 +            if (MAX_SIGN_LINE_LENGTH <= 0) return line;
-+            final int newLineLength = line.codePoints().limit(MAX_SIGN_LINE_LENGTH).map(Character::charCount).sum();
-+            if (newLineLength < line.length()) return line.substring(0, newLineLength);
++            final int maxLength = line.codePoints().limit(MAX_SIGN_LINE_LENGTH).map(Character::charCount).sum();
++            if (line.length() > maxLength) return line.substring(0, maxLength);
 +            return line;
 +        };
 +        List<String> lines = packet.lines().stream().map(lineLimiter).map(ChatFormatting::stripFormatting).collect(Collectors.toList());

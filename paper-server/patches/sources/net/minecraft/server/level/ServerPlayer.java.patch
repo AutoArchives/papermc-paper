@@ -1472,7 +1472,7 @@
          }
 -
 +        // Paper start - remove player from map on drop
-+        if (droppedItemStack.is(net.minecraft.world.item.Items.FILLED_MAP)) {
++        if (droppedItemStack.getItem() instanceof MapItem) {
 +            final MapItemSavedData mapData = MapItem.getSavedData(droppedItemStack, this.level());
 +            if (mapData != null) {
 +                mapData.tickCarriedBy(this, droppedItemStack, null);

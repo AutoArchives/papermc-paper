@@ -8,7 +8,7 @@
          if (placementState == null) {
              return InteractionResult.FAIL;
          }
-@@ -82,21 +_,47 @@
+@@ -82,21 +_,46 @@
          Player player = updatedPlaceContext.getPlayer();
          ItemStack itemStack = updatedPlaceContext.getItemInHand();
          BlockState placedState = level.getBlockState(pos);
@@ -19,8 +19,7 @@
 -            updateBlockEntityComponents(level, pos, itemStack);
 +            // Paper start - Reset placed block on exception
 +            try {
-+                boolean updatedBlockEntity = updateCustomBlockEntityTag(level, player, pos, itemStack);
-+                context = context.andThen(c -> c.updatedBlockEntity(updatedBlockEntity))::apply; // track whether the block entity got updated or not
++                updateCustomBlockEntityTag(level, player, pos, itemStack);
 +                updateBlockEntityComponents(level, pos, itemStack);
 +            } catch (Exception ex) {
 +                ((org.bukkit.craftbukkit.block.CraftBlockState) previousState).revertPlace(false);
